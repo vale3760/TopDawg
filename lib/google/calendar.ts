@@ -1,8 +1,6 @@
-// lib/google/calendar.ts
 import "server-only";
 
 import { google } from "googleapis";
-
 import { oauth2Client } from "@/lib/google/oauth";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
@@ -11,10 +9,18 @@ export async function getGoogleCalendar() {
     .from("google_connections")
     .select("access_token, refresh_token, token_expiry")
     .eq("provider", "google")
-    .single();
+    .maybeSingle();
 
-  if (error || !data?.refresh_token) {
-    throw new Error("Google Calendar has not been connected");
+  if (error) {
+    throw new Error(
+      `Could not load Google connection: ${error.message}`,
+    );
+  }
+
+  if (!data?.refresh_token) {
+    throw new Error(
+      "Google Calendar is not connected. Visit /api/google/connect.",
+    );
   }
 
   oauth2Client.setCredentials({
