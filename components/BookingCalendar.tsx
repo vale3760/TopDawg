@@ -5,7 +5,6 @@ import { useEffect, useMemo, useState } from "react";
 import {
   DayPicker,
   type DateRange,
-  type Matcher,
 } from "react-day-picker";
 import { differenceInCalendarDays, eachDayOfInterval, format } from "date-fns";
 import "react-day-picker/style.css";
@@ -21,7 +20,7 @@ type BoardingBooking = {
   numberOfDogs: number;
 };
 
-const BOARDING_CAPACITY = 3;
+const BOARDING_CAPACITY = 2;
 
 function normalizeDate(date: Date) {
   return new Date(date.getFullYear(), date.getMonth(), date.getDate());
@@ -56,35 +55,9 @@ function parseLocalDate(dateString: string) {
 export default function BookingCalendar() {
   const [service, setService] = useState<ServiceType>("boarding");
   const [boardingRange, setBoardingRange] = useState<DateRange>();
-  const [trainingDate, setTrainingDate] = useState<Date>();
-  const [trainingTime, setTrainingTime] = useState<string>();
   const [boardingBookings, setBoardingBookings] = useState<BoardingBooking[]>([]);
 
   const today = useMemo(() => normalizeDate(new Date()), []);
-
-  const fullBoardingDates = useMemo<Matcher[]>(() => {
-    const fullDates: Date[] = [];
-
-    const searchStart = today;
-    const searchEnd = new Date(
-      today.getFullYear() + 1,
-      today.getMonth(),
-      today.getDate(),
-    );
-
-    const dates = eachDayOfInterval({
-      start: searchStart,
-      end: searchEnd,
-    });
-
-    for (const date of dates) {
-      if (getRemainingBoardingSpots(date) === 0) {
-        fullDates.push(date);
-      }
-    }
-
-    return [{ before: today }, ...fullDates];
-  }, [today, boardingBookings]);
 
   const selectedNights = useMemo(() => {
     if (!boardingRange?.from || !boardingRange.to) {
@@ -99,21 +72,65 @@ export default function BookingCalendar() {
 
   useEffect(() => {
   async function loadBookings() {
-    const response = await fetch("/api/calendar/availability");
+    try {
+      const response = await fetch("/api/calendar/availability", {
+        cache: "no-store",
+      });
 
-    const data = await response.json();
+      const rawText = await response.text();
 
-    setBoardingBookings(
-      data.bookings.map((booking: any) => ({
-        ...booking,
-        startDate: parseLocalDate(booking.startDate),
-        endDate: parseLocalDate(booking.endDate),
-      }))
-    );
+      console.log("Availability response:", {
+        status: response.status,
+        statusText: response.statusText,
+        body: rawText,
+      });
+
+      if (!response.ok) {
+        console.error("Availability API failed:", {
+          status: response.status,
+          statusText: response.statusText,
+          body: rawText,
+        });
+
+        return;
+      }
+
+      const data = JSON.parse(rawText);
+
+      setBoardingBookings(
+        data.bookings.map(
+          (booking: {
+            id: string;
+            name: string;
+            startDate: string;
+            endDate: string;
+            numberOfDogs: number;
+          }) => ({
+            ...booking,
+            startDate: parseLocalDate(booking.startDate),
+            endDate: parseLocalDate(booking.endDate),
+          }),
+        ),
+      );
+    } catch (error) {
+      console.error("Failed to load availability:", error);
+    }
   }
 
-  loadBookings();
+  void loadBookings();
 }, []);
+
+const [mounted, setMounted] = useState(false);
+
+useEffect(() => {
+  setMounted(true);
+}, []);
+
+function parseLocalDate(value: string) {
+  const [year, month, day] = value.split("-").map(Number);
+
+  return new Date(year, month - 1, day);
+}
 
 function getDogsBookedForDate(date: Date) {
     return boardingBookings.reduce((total, booking) => {
@@ -138,50 +155,35 @@ function getDogsBookedForDate(date: Date) {
     );
   }
 
-  const oneDogDates = useMemo(() => {
-    const dates = eachDayOfInterval({
+  const calendarDates = useMemo(
+  () =>
+    eachDayOfInterval({
       start: today,
       end: new Date(
         today.getFullYear() + 1,
         today.getMonth(),
         today.getDate(),
       ),
-    });
+    }),
+  [today],
+);
 
-    return dates.filter(
-      (date) => getDogsBookedForDate(date) === 1,
-    );
-  }, [boardingBookings, today]);
-
-  const twoDogDates = useMemo(() => {
-    const dates = eachDayOfInterval({
-      start: today,
-      end: new Date(
-        today.getFullYear() + 1,
-        today.getMonth(),
-        today.getDate(),
+  const oneSpotLeftDates = useMemo(
+    () =>
+      calendarDates.filter(
+        (date) => getDogsBookedForDate(date) === 1,
       ),
-    });
+    [calendarDates, boardingBookings],
+  );
 
-    return dates.filter(
-      (date) => getDogsBookedForDate(date) === 2,
+    const fullyBookedDates = useMemo(
+      () =>
+        calendarDates.filter(
+          (date) =>
+            getDogsBookedForDate(date) >= BOARDING_CAPACITY,
+        ),
+      [calendarDates, boardingBookings],
     );
-  }, [boardingBookings, today]);
-
-  const fullyBookedDates = useMemo(() => {
-    const dates = eachDayOfInterval({
-      start: today,
-      end: new Date(
-        today.getFullYear() + 1,
-        today.getMonth(),
-        today.getDate(),
-      ),
-    });
-
-    return dates.filter(
-      (date) => getDogsBookedForDate(date) === 3,
-    );
-  }, [boardingBookings, today]);
 
   const minimumRemainingSpots = useMemo(() => {
     if (!boardingRange?.from || !boardingRange.to) {
@@ -200,7 +202,7 @@ function getDogsBookedForDate(date: Date) {
     return Math.min(
       ...nights.map((date) => getRemainingBoardingSpots(date)),
     );
-  }, [boardingRange]);
+}, [boardingRange, boardingBookings]);
 
   const contactUrl = useMemo(() => {
     const params = new URLSearchParams();
@@ -231,8 +233,6 @@ function getDogsBookedForDate(date: Date) {
   function changeService(nextService: ServiceType) {
     setService(nextService);
     setBoardingRange(undefined);
-    setTrainingDate(undefined);
-    setTrainingTime(undefined);
   }
 
   return (
@@ -272,57 +272,57 @@ function getDogsBookedForDate(date: Date) {
               </p>
 
               <h2 className="mt-2 text-3xl font-black text-stone-950">
-                "Select drop-off and pick-up dates"
+                Select drop-off and pick-up dates
               </h2>
 
               <div className="calendar-wrapper mt-6 overflow-x-auto rounded-2xl border border-stone-200 p-4 sm:p-8">
-                <DayPicker
-                  mode="range"
-                  selected={boardingRange}
-                  onSelect={setBoardingRange}
-                  disabled={[{ before: today }, ...fullyBookedDates]}
-                  excludeDisabled
-                  min={1}
-                  showOutsideDays
-                  modifiers={{
-                    oneDog: oneDogDates,
-                    twoDogs: twoDogDates,
-                    fullyBooked: fullyBookedDates,
-                  }}
-                  modifiersClassNames={{
-                    oneDog:
-                      "!bg-green-500 !text-white rounded-full",
+                {mounted ? (
+                  <DayPicker
+                    mode="range"
+                    selected={boardingRange}
+                    onSelect={setBoardingRange}
+                    disabled={[{ before: today }, ...fullyBookedDates]}
+                    excludeDisabled
+                    min={1}
+                    showOutsideDays
+                    modifiers={{
+                      oneSpotLeft: oneSpotLeftDates,
+                      fullyBooked: fullyBookedDates,
+                    }}
+                    modifiersClassNames={{
+                      oneSpotLeft:
+                        "!bg-yellow-400 !text-stone-950 rounded-full",
 
-                    twoDogs:
-                      "!bg-yellow-400 !text-stone-950 rounded-full",
+                      fullyBooked:
+                        "!bg-stone-200 !text-stone-400 !opacity-50 rounded-full cursor-not-allowed",
 
-                    fullyBooked:
-                      "!bg-gray-400 !text-white !opacity-100 rounded-full cursor-not-allowed",
+                      selected:
+                        "!bg-transparent !text-stone-950 !ring-2 !ring-inset !ring-[#4C6A58] rounded-full",
 
-                    selected:
-                      "!bg-transparent !text-stone-950 !ring-2 !ring-inset !ring-[#4C6A58] rounded-full",
+                      range_start:
+                        "!bg-transparent !text-stone-950 !ring-2 !ring-inset !ring-[#4C6A58] rounded-full",
 
-                    range_start:
-                      "!bg-transparent !text-stone-950 !ring-2 !ring-inset !ring-[#4C6A58] rounded-full",
+                      range_middle:
+                        "!bg-transparent !text-stone-950 !ring-2 !ring-inset !ring-[#4C6A58] rounded-full",
 
-                    range_middle:
-                      "!bg-transparent !text-stone-950 !ring-2 !ring-inset !ring-[#4C6A58] rounded-full",
-
-                    range_end:
-                      "!bg-transparent !text-stone-950 !ring-2 !ring-inset !ring-[#4C6A58] rounded-full",
-                                      }}
-                />
+                      range_end:
+                        "!bg-transparent !text-stone-950 !ring-2 !ring-inset !ring-[#4C6A58] rounded-full",
+                    }}
+                  />
+                ) : (
+                  <div className="h-[500px]" />
+                )}
               </div>
 
               <div className="mt-5 flex flex-wrap gap-4 text-sm text-stone-600">
                 <CalendarLegend
-                  label="1 dog booked"
-                  styleType="oneDog"
+                  label="Open"
+                  styleType="open"
                 />
 
                 <CalendarLegend
-                  label="2 dogs booked"
-                  styleType="twoDogs"
+                  label="1 spot left"
+                  styleType="oneSpotLeft"
                 />
 
                 <CalendarLegend
@@ -472,7 +472,7 @@ function BoardingSummary({
             </p>
 
             <p className="mt-2 text-2xl font-black text-amber-300">
-              {remainingSpots ?? 0} of 3 spots remaining
+              {remainingSpots ?? 0} of {BOARDING_CAPACITY} spots remaining
             </p>
           </div>
         </>
@@ -501,12 +501,12 @@ function CalendarLegend({
   styleType,
 }: {
   label: string;
-  styleType: "oneDog" | "twoDogs" | "full";
+  styleType: "open" | "oneSpotLeft" | "full";
 }) {
   const styles = {
-    oneDog: "bg-green-500",
-    twoDogs: "bg-yellow-400",
-    full: "bg-gray-400",
+    open: "border border-stone-300 bg-white",
+    oneSpotLeft: "bg-yellow-400",
+    full: "bg-stone-300 opacity-50",
   };
 
   return (

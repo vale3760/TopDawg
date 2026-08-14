@@ -44,7 +44,7 @@ export async function GET() {
             startDate: event.start!.date!,
             endDate: event.end!.date!,
             numberOfDogs: parseDogCount(event.description),
-            }))
+            })) ?? [];
 
     return NextResponse.json({
       bookings,

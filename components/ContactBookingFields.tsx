@@ -8,28 +8,20 @@ type ContactBookingFieldsProps = {
   initialEndDate?: string;
   initialDate?: string;
   initialTime?: string;
+  onServiceChange?: (service: string) => void;
 };
-
-const trainingServices = [
-  "assessment",
-  "private-training",
-  "three-lesson-package",
-  "five-lesson-package",
-];
 
 export default function ContactBookingFields({
   initialService = "",
   initialStartDate = "",
   initialEndDate = "",
-  initialDate = "",
+  onServiceChange,
 }: ContactBookingFieldsProps) {
   const [service, setService] = useState(initialService);
   const [startDate, setStartDate] = useState(initialStartDate);
   const [endDate, setEndDate] = useState(initialEndDate);
-  const [lessonDate, setLessonDate] = useState(initialDate);
 
-  const isTraining = trainingServices.includes(service);
-  const isBoarding =
+  const needsDates =
     service === "boarding" || service === "board-and-train";
 
   return (
@@ -47,11 +39,12 @@ export default function ContactBookingFields({
             const nextService = event.target.value;
 
             setService(nextService);
+            onServiceChange?.(nextService);
+
             setStartDate("");
             setEndDate("");
-            setLessonDate("");
           }}
-          className="rounded-xl border border-stone-300 bg-white px-4 py-3 outline-none focus:border-[#355C4B]"
+          className="rounded-xl border border-stone-300 bg-white px-4 py-3 outline-none transition focus:border-[#355C4B] focus:ring-2 focus:ring-[#355C4B]/10"
         >
           <option value="">Select a service</option>
 
@@ -59,52 +52,68 @@ export default function ContactBookingFields({
             Initial Assessment + First Lesson
           </option>
 
-          <option value="boarding">In-Home Boarding</option>
+          <option value="boarding">
+            In-Home Boarding
+          </option>
 
           <option value="board-and-train">
-            Board and Train
+            Board & Train
           </option>
         </select>
       </label>
 
-      {isBoarding && (
-        <div className="mt-6 grid gap-6 md:grid-cols-2">
-          <label className="flex flex-col gap-2">
-            <span className="font-bold text-stone-800">
-              Drop-off date
-            </span>
+      {needsDates && (
+        <div className="mt-6">
+          <p className="mb-4 text-sm leading-6 text-stone-500">
+            Tell me the dates you're interested in. Your stay is not
+            confirmed until your request has been reviewed.
+          </p>
 
-            <input
-              type="date"
-              name="startDate"
-              required
-              value={startDate}
-              onChange={(event) => setStartDate(event.target.value)}
-              className="rounded-xl border border-stone-300 bg-white px-4 py-3 outline-none focus:border-[#355C4B]"
-            />
-          </label>
+          <div className="grid gap-6 md:grid-cols-2">
+            <label className="flex flex-col gap-2">
+              <span className="font-bold text-stone-800">
+                Drop-off date
+              </span>
 
-          <label className="flex flex-col gap-2">
-            <span className="font-bold text-stone-800">
-              Pick-up date
-            </span>
+              <input
+                type="date"
+                name="startDate"
+                required
+                value={startDate}
+                onChange={(event) => setStartDate(event.target.value)}
+                className="rounded-xl border border-stone-300 bg-white px-4 py-3 outline-none transition focus:border-[#355C4B] focus:ring-2 focus:ring-[#355C4B]/10"
+              />
+            </label>
 
-            <input
-              type="date"
-              name="endDate"
-              required
-              value={endDate}
-              min={startDate || undefined}
-              onChange={(event) => setEndDate(event.target.value)}
-              className="rounded-xl border border-stone-300 bg-white px-4 py-3 outline-none focus:border-[#355C4B]"
-            />
-          </label>
+            <label className="flex flex-col gap-2">
+              <span className="font-bold text-stone-800">
+                Pick-up date
+              </span>
+
+              <input
+                type="date"
+                name="endDate"
+                required
+                value={endDate}
+                min={startDate || undefined}
+                onChange={(event) => setEndDate(event.target.value)}
+                className="rounded-xl border border-stone-300 bg-white px-4 py-3 outline-none transition focus:border-[#355C4B] focus:ring-2 focus:ring-[#355C4B]/10"
+              />
+            </label>
+          </div>
         </div>
+      )}
+
+      {service === "assessment" && (
+        <p className="mt-4 text-sm leading-6 text-stone-500">
+          No date is needed yet. After reviewing your intake form, José will
+          reach out to coordinate your initial assessment and first lesson.
+        </p>
       )}
 
       {!service && (
         <p className="mt-4 text-sm text-stone-500">
-          Select a service to choose your requested date.
+          Select a service to get started.
         </p>
       )}
     </div>
