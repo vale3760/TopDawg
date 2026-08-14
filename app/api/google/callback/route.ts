@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { oauth2Client } from "@/lib/google/oauth";
-import { supabaseAdmin } from "@/lib/supabase/admin";
 
 export async function GET(request: NextRequest) {
   try {
@@ -36,36 +35,11 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(
         {
           error:
-            "Google did not return a refresh token. Revoke the app's access in your Google account and connect again.",
+            "Google did not return a refresh token. Reconnect Google Calendar and approve access again.",
         },
         {
           status: 400,
         },
-      );
-    }
-
-    const { error: databaseError } = await supabaseAdmin
-      .from("google_connections")
-      .upsert(
-        {
-          provider: "google",
-          access_token: tokens.access_token ?? null,
-          refresh_token: tokens.refresh_token,
-          token_expiry: tokens.expiry_date
-            ? new Date(tokens.expiry_date).toISOString()
-            : null,
-          scope: tokens.scope ?? null,
-          token_type: tokens.token_type ?? null,
-          updated_at: new Date().toISOString(),
-        },
-        {
-          onConflict: "provider",
-        },
-      );
-
-    if (databaseError) {
-      throw new Error(
-        `Could not save Google connection: ${databaseError.message}`,
       );
     }
 

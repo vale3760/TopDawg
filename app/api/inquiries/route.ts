@@ -74,196 +74,220 @@ export async function POST(request: NextRequest) {
             ? "Initial Assessment + First Lesson"
             : service;
 
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 700px; margin: 0 auto; color: #292524;">
+
+        <h1 style="color:#355C4B;">
+          New Top Dawg Pet Care Intake
+        </h1>
+
+        <p>
+          <strong>Service:</strong> ${escapeHtml(serviceLabel)}
+        </p>
+
+        ${
+          service === "boarding" || service === "board-and-train"
+            ? `
+              <p>
+                <strong>Requested dates:</strong>
+                ${escapeHtml(requestedDates || "Not provided")}
+              </p>
+            `
+            : ""
+        }
+
+        <hr />
+
+        <h2>Owner Information</h2>
+
+        <p>
+          <strong>Name:</strong>
+          ${escapeHtml(firstName)} ${escapeHtml(lastName)}
+        </p>
+
+        <p>
+          <strong>Email:</strong>
+          ${escapeHtml(email)}
+        </p>
+
+        <p>
+          <strong>Phone:</strong>
+          ${escapeHtml(phone || "Not provided")}
+        </p>
+
+        <p>
+          <strong>Address / Neighborhood:</strong>
+          ${escapeHtml(address || "Not provided")}
+        </p>
+
+        <hr />
+
+        <h2>About the Dog</h2>
+
+        <p>
+          <strong>Name:</strong>
+          ${escapeHtml(dogName)}
+        </p>
+
+        <p>
+          <strong>Breed / Mix:</strong>
+          ${escapeHtml(breed || "Not provided")}
+        </p>
+
+        <p>
+          <strong>Age:</strong>
+          ${escapeHtml(dogAge || "Not provided")}
+        </p>
+
+        ${
+          dogOwnershipLength
+            ? `
+              <p>
+                <strong>How long they've had the dog:</strong>
+                ${escapeHtml(dogOwnershipLength)}
+              </p>
+            `
+            : ""
+        }
+
+        ${emailSection(
+          "Personality / Background",
+          dogPersonality,
+        )}
+
+        ${
+          service === "boarding" || service === "board-and-train"
+            ? `
+              <hr />
+
+              <h2>Boarding Information</h2>
+
+              ${emailSection(
+                "How does the dog do when left home alone?",
+                homeAlone,
+              )}
+
+              ${emailSection(
+                "How does the dog do around other dogs?",
+                aroundDogs,
+              )}
+
+              ${emailSection(
+                "House trained?",
+                houseTrained,
+              )}
+
+              ${emailSection(
+                "Feeding Schedule",
+                feedingSchedule,
+              )}
+
+              ${emailSection(
+                "Medications",
+                medications,
+              )}
+
+              ${emailSection(
+                "Allergies / Dietary Restrictions",
+                allergies,
+              )}
+
+              ${emailSection(
+                "Behavior Concerns",
+                behaviorConcerns,
+              )}
+
+              <hr />
+
+              <h2>Emergency Information</h2>
+
+              ${emailSection(
+                "Veterinarian / Hospital",
+                veterinarian,
+              )}
+
+              ${emailSection(
+                "Emergency Contact",
+                emergencyContact,
+              )}
+
+              ${emailSection(
+                "Emergency Notes",
+                emergencyInformation,
+              )}
+            `
+            : ""
+        }
+
+        ${
+          service === "assessment" || service === "board-and-train"
+            ? `
+              <hr />
+
+              <h2>Training & Behavior</h2>
+
+              ${emailSection(
+                "Behaviors / Challenges & Goals",
+                goals,
+              )}
+
+              ${emailSection(
+                "Most Challenging Situations",
+                challengingSituations,
+              )}
+
+              ${emailSection(
+                "Previous Training",
+                trainingHistory,
+              )}
+
+              ${emailSection(
+                "What Motivates the Dog?",
+                dogMotivation,
+              )}
+
+              ${emailSection(
+                "Desired Changes",
+                desiredChanges,
+              )}
+
+              ${emailSection(
+                "Questions for José",
+                ownerQuestions,
+              )}
+            `
+            : ""
+        }
+
+        ${
+          service === "board-and-train"
+            ? emailSection(
+                "Board & Train Goals",
+                boardAndTrainGoals,
+              )
+            : ""
+        }
+
+        ${emailSection(
+          "Additional Information",
+          additionalInformation,
+        )}
+
+        <hr />
+
+        <p style="color:#78716c; font-size:14px;">
+          Submitted through topdawgpetcare.com
+        </p>
+
+      </div>
+    `;
+
     const { data, error } = await resend.emails.send({
       from: `Top Dawg Pet Care <${process.env.RESEND_FROM_EMAIL}>`,
       to: [process.env.BOOKING_EMAIL!],
-
-      // When José hits Reply, it replies directly to the customer.
       replyTo: email,
-
       subject: `New ${serviceLabel} request — ${firstName} ${lastName}`,
-
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 700px; margin: 0 auto; color: #292524;">
-          <h1 style="color:#355C4B;">
-            New Top Dawg Pet Care Intake
-          </h1>
-
-          <p>
-            <strong>Service:</strong> ${escapeHtml(serviceLabel)}
-          </p>
-
-          ${
-            service === "boarding" || service === "board-and-train"
-              ? `
-                <p>
-                  <strong>Requested dates:</strong>
-                  ${escapeHtml(requestedDates || "Not provided")}
-                </p>
-              `
-              : ""
-          }
-
-          <hr />
-
-          <h2>Owner Information</h2>
-
-          <p><strong>Name:</strong> ${escapeHtml(firstName)} ${escapeHtml(lastName)}</p>
-          <p><strong>Email:</strong> ${escapeHtml(email)}</p>
-          <p><strong>Phone:</strong> ${escapeHtml(phone || "Not provided")}</p>
-          <p><strong>Address / Neighborhood:</strong> ${escapeHtml(address || "Not provided")}</p>
-
-          <hr />
-
-          <h2>About the Dog</h2>
-
-          <p><strong>Name:</strong> ${escapeHtml(dogName)}</p>
-          <p><strong>Breed / Mix:</strong> ${escapeHtml(breed || "Not provided")}</p>
-          <p><strong>Age:</strong> ${escapeHtml(dogAge || "Not provided")}</p>
-
-          ${
-            dogOwnershipLength
-              ? `
-                <p>
-                  <strong>How long they've had the dog:</strong>
-                  ${escapeHtml(dogOwnershipLength)}
-                </p>
-              `
-              : ""
-          }
-
-          ${emailSection(
-            "Personality / Background",
-            dogPersonality,
-          )}
-
-          ${
-            service === "boarding" || service === "board-and-train"
-              ? `
-                <hr />
-
-                <h2>Boarding Information</h2>
-
-                ${emailSection(
-                  "How does the dog do when left home alone?",
-                  homeAlone,
-                )}
-
-                ${emailSection(
-                  "How does the dog do around other dogs?",
-                  aroundDogs,
-                )}
-
-                ${emailSection(
-                  "House trained?",
-                  houseTrained,
-                )}
-
-                ${emailSection(
-                  "Feeding Schedule",
-                  feedingSchedule,
-                )}
-
-                ${emailSection(
-                  "Medications",
-                  medications,
-                )}
-
-                ${emailSection(
-                  "Allergies / Dietary Restrictions",
-                  allergies,
-                )}
-
-                ${emailSection(
-                  "Behavior Concerns",
-                  behaviorConcerns,
-                )}
-
-                <hr />
-
-                <h2>Emergency Information</h2>
-
-                ${emailSection(
-                  "Veterinarian / Hospital",
-                  veterinarian,
-                )}
-
-                ${emailSection(
-                  "Emergency Contact",
-                  emergencyContact,
-                )}
-
-                ${emailSection(
-                  "Emergency Notes",
-                  emergencyInformation,
-                )}
-              `
-              : ""
-          }
-
-          ${
-            service === "assessment" || service === "board-and-train"
-              ? `
-                <hr />
-
-                <h2>Training & Behavior</h2>
-
-                ${emailSection(
-                  "Behaviors / Challenges & Goals",
-                  goals,
-                )}
-
-                ${emailSection(
-                  "Most Challenging Situations",
-                  challengingSituations,
-                )}
-
-                ${emailSection(
-                  "Previous Training",
-                  trainingHistory,
-                )}
-
-                ${emailSection(
-                  "What Motivates the Dog?",
-                  dogMotivation,
-                )}
-
-                ${emailSection(
-                  "Desired Changes",
-                  desiredChanges,
-                )}
-
-                ${emailSection(
-                  "Questions for José",
-                  ownerQuestions,
-                )}
-              `
-              : ""
-          }
-
-          ${
-            service === "board-and-train"
-              ? `
-                ${emailSection(
-                  "Board & Train Goals",
-                  boardAndTrainGoals,
-                )}
-              `
-              : ""
-          }
-
-          ${emailSection(
-            "Additional Information",
-            additionalInformation,
-          )}
-
-          <hr />
-
-          <p style="color:#78716c; font-size:14px;">
-            Submitted through topdawgpetcare.com
-          </p>
-        </div>
-      `,
+      html,
     });
 
     if (error) {
@@ -277,9 +301,7 @@ export async function POST(request: NextRequest) {
               ? error.message
               : undefined,
         },
-        {
-          status: 500,
-        },
+        { status: 500 },
       );
     }
 
@@ -289,12 +311,18 @@ export async function POST(request: NextRequest) {
       success: true,
       emailId: data?.id,
     });
-  } catch (error) {
+
+} catch (error) {
     console.error("INQUIRY ERROR:", error);
 
     return NextResponse.json(
       {
         error: "The intake form could not be submitted.",
+        details:
+          process.env.NODE_ENV === "development" &&
+          error instanceof Error
+            ? error.message
+            : undefined,
       },
       {
         status: 500,

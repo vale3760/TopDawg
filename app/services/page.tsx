@@ -81,11 +81,10 @@ export default function ServicesPage() {
           className="scroll-mt-28 bg-[#f8f4ec] px-6 py-24"
         >
           <div className="mx-auto max-w-7xl">
-            <p className="mt-4 max-w-3xl text-4xl font-black text-stone-950 md:text-4xl">
+            <p className="text-sm font-bold uppercase tracking-[0.22em] text-amber-700">
               Training
             </p>
-            <br></br>
-            <h2 className="text-sm font-bold uppercase tracking-[0.22em] text-[#051030]">
+            <h2 className="mt-4 max-w-3xl text-4xl font-black text-stone-950 md:text-5xl">
               Make training part of everyday life.
             </h2>
 

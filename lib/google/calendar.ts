@@ -2,33 +2,16 @@ import "server-only";
 
 import { google } from "googleapis";
 import { oauth2Client } from "@/lib/google/oauth";
-import { supabaseAdmin } from "@/lib/supabase/admin";
 
-export async function getGoogleCalendar() {
-  const { data, error } = await supabaseAdmin
-    .from("google_connections")
-    .select("access_token, refresh_token, token_expiry")
-    .eq("provider", "google")
-    .maybeSingle();
+export function getGoogleCalendar() {
+  const refreshToken = process.env.GOOGLE_REFRESH_TOKEN;
 
-  if (error) {
-    throw new Error(
-      `Could not load Google connection: ${error.message}`,
-    );
-  }
-
-  if (!data?.refresh_token) {
-    throw new Error(
-      "Google Calendar is not connected. Visit /api/google/connect.",
-    );
+  if (!refreshToken) {
+    throw new Error("Missing GOOGLE_REFRESH_TOKEN");
   }
 
   oauth2Client.setCredentials({
-    access_token: data.access_token ?? undefined,
-    refresh_token: data.refresh_token,
-    expiry_date: data.token_expiry
-      ? new Date(data.token_expiry).getTime()
-      : undefined,
+    refresh_token: refreshToken,
   });
 
   return google.calendar({
