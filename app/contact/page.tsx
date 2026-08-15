@@ -27,13 +27,15 @@ export default async function ContactPage({
 
   return (
     <>
+      {/* HERO */}
       <section className="relative overflow-hidden px-6 py-28">
-      <Image
-        src="/gallery/litoPics1.jpeg"
-        alt="José working with a dog"
-        fill
-        className="object-cover object-[center_40%]"
-      />
+        <Image
+          src="/HollyPark.jpeg"
+          alt="José working with a dog"
+          fill
+          className="object-cover object-[center_40%]"
+          priority
+        />
 
         <div className="absolute inset-0 bg-[#4C6A58]/65" />
 
@@ -47,11 +49,12 @@ export default async function ContactPage({
           </h1>
 
           <p className="mt-7 max-w-2xl text-xl leading-8 text-white/90">
-            Complete the intake form and we'll be in touch soon.
+            Complete the inquiry form and we'll be in touch soon.
           </p>
         </div>
       </section>
 
+      {/* FORM */}
       <section className="bg-[#f8f4ec] px-6 py-24">
         <ContactForm
           initialService={service}

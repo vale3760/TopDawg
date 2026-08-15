@@ -8,45 +8,37 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
 
     const {
+      // OWNER
       firstName,
       lastName,
       email,
       phone,
-      address,
 
+      // DOG
       dogName,
       breed,
       dogAge,
-      dogOwnershipLength,
       dogPersonality,
 
+      // SERVICE / DATES
       service,
       startDate,
       endDate,
       requestedDates,
 
-      homeAlone,
-      aroundDogs,
+      // BOARDING
       houseTrained,
-      feedingSchedule,
-      medications,
-      allergies,
+      aroundDogs,
+
+      // TRAINING
       behaviorConcerns,
-
-      veterinarian,
-      emergencyContact,
-      emergencyInformation,
-
       goals,
       challengingSituations,
-      trainingHistory,
-      dogMotivation,
-      desiredChanges,
-      ownerQuestions,
-      boardAndTrainGoals,
-
-      additionalInformation,
     } = body;
+
+    /* --------------------------------
+       VALIDATION
+    -------------------------------- */
 
     if (
       !firstName ||
@@ -65,6 +57,31 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const needsBoarding =
+      service === "boarding" ||
+      service === "board-and-train";
+
+    const needsTraining =
+      service === "assessment" ||
+      service === "board-and-train";
+
+    // Boarding and Board & Train must have dates
+    if (needsBoarding && (!startDate || !endDate)) {
+      return NextResponse.json(
+        {
+          error:
+            "Please select your boarding dates from the availability calendar.",
+        },
+        {
+          status: 400,
+        },
+      );
+    }
+
+    /* --------------------------------
+       SERVICE NAME
+    -------------------------------- */
+
     const serviceLabel =
       service === "boarding"
         ? "In-Home Boarding"
@@ -74,35 +91,72 @@ export async function POST(request: NextRequest) {
             ? "Initial Assessment + First Lesson"
             : service;
 
-    const html = `
-      <div style="font-family: Arial, sans-serif; max-width: 700px; margin: 0 auto; color: #292524;">
+    /* --------------------------------
+       EMAIL HTML
+    -------------------------------- */
 
-        <h1 style="color:#355C4B;">
-          New Top Dawg Pet Care Intake
+    const html = `
+      <div
+        style="
+          font-family: Arial, sans-serif;
+          max-width: 700px;
+          margin: 0 auto;
+          color: #292524;
+          line-height: 1.6;
+        "
+      >
+
+        <h1 style="color:#355C4B; margin-bottom:8px;">
+          New Top Dawg Pet Care Inquiry
         </h1>
 
-        <p>
-          <strong>Service:</strong> ${escapeHtml(serviceLabel)}
+        <p style="font-size:18px;">
+          <strong>Service:</strong>
+          ${escapeHtml(serviceLabel)}
         </p>
 
         ${
-          service === "boarding" || service === "board-and-train"
+          needsBoarding
             ? `
-              <p>
-                <strong>Requested dates:</strong>
-                ${escapeHtml(requestedDates || "Not provided")}
-              </p>
+              <div
+                style="
+                  background:#f8f4ec;
+                  padding:16px 20px;
+                  border-radius:12px;
+                  margin:20px 0;
+                "
+              >
+                <strong>Requested Stay</strong>
+
+                <p style="margin:8px 0 0;">
+                  ${escapeHtml(
+                    requestedDates ||
+                      `Drop-off: ${startDate}; Pick-up: ${endDate}`,
+                  )}
+                </p>
+              </div>
             `
             : ""
         }
 
-        <hr />
+        <hr
+          style="
+            border:none;
+            border-top:1px solid #e7e5e4;
+            margin:30px 0;
+          "
+        />
 
-        <h2>Owner Information</h2>
+        <!-- OWNER -->
+
+        <h2 style="color:#051030;">
+          Owner Information
+        </h2>
 
         <p>
           <strong>Name:</strong>
-          ${escapeHtml(firstName)} ${escapeHtml(lastName)}
+          ${escapeHtml(firstName)}
+          ${escapeHtml(lastName)}
         </p>
 
         <p>
@@ -115,14 +169,19 @@ export async function POST(request: NextRequest) {
           ${escapeHtml(phone || "Not provided")}
         </p>
 
-        <p>
-          <strong>Address / Neighborhood:</strong>
-          ${escapeHtml(address || "Not provided")}
-        </p>
+        <hr
+          style="
+            border:none;
+            border-top:1px solid #e7e5e4;
+            margin:30px 0;
+          "
+        />
 
-        <hr />
+        <!-- DOG -->
 
-        <h2>About the Dog</h2>
+        <h2 style="color:#051030;">
+          About the Dog
+        </h2>
 
         <p>
           <strong>Name:</strong>
@@ -139,38 +198,25 @@ export async function POST(request: NextRequest) {
           ${escapeHtml(dogAge || "Not provided")}
         </p>
 
-        ${
-          dogOwnershipLength
-            ? `
-              <p>
-                <strong>How long they've had the dog:</strong>
-                ${escapeHtml(dogOwnershipLength)}
-              </p>
-            `
-            : ""
-        }
-
         ${emailSection(
           "Personality / Background",
           dogPersonality,
         )}
 
         ${
-          service === "boarding" || service === "board-and-train"
+          needsBoarding
             ? `
-              <hr />
+              <hr
+                style="
+                  border:none;
+                  border-top:1px solid #e7e5e4;
+                  margin:30px 0;
+                "
+              />
 
-              <h2>Boarding Information</h2>
-
-              ${emailSection(
-                "How does the dog do when left home alone?",
-                homeAlone,
-              )}
-
-              ${emailSection(
-                "How does the dog do around other dogs?",
-                aroundDogs,
-              )}
+              <h2 style="color:#051030;">
+                Boarding Information
+              </h2>
 
               ${emailSection(
                 "House trained?",
@@ -178,130 +224,103 @@ export async function POST(request: NextRequest) {
               )}
 
               ${emailSection(
-                "Feeding Schedule",
-                feedingSchedule,
-              )}
-
-              ${emailSection(
-                "Medications",
-                medications,
-              )}
-
-              ${emailSection(
-                "Allergies / Dietary Restrictions",
-                allergies,
-              )}
-
-              ${emailSection(
-                "Behavior Concerns",
-                behaviorConcerns,
-              )}
-
-              <hr />
-
-              <h2>Emergency Information</h2>
-
-              ${emailSection(
-                "Veterinarian / Hospital",
-                veterinarian,
-              )}
-
-              ${emailSection(
-                "Emergency Contact",
-                emergencyContact,
-              )}
-
-              ${emailSection(
-                "Emergency Notes",
-                emergencyInformation,
+                "How does the dog do around other dogs?",
+                aroundDogs,
               )}
             `
             : ""
         }
 
         ${
-          service === "assessment" || service === "board-and-train"
+          needsTraining
             ? `
-              <hr />
+              <hr
+                style="
+                  border:none;
+                  border-top:1px solid #e7e5e4;
+                  margin:30px 0;
+                "
+              />
 
-              <h2>Training & Behavior</h2>
+              <h2 style="color:#051030;">
+                Training & Behavior
+              </h2>
 
               ${emailSection(
-                "Behaviors / Challenges & Goals",
+                "What behaviors or challenges are they currently experiencing?",
+                behaviorConcerns,
+              )}
+
+              ${emailSection(
+                "What would they like to accomplish through training?",
                 goals,
               )}
 
               ${emailSection(
-                "Most Challenging Situations",
+                "What situations are most challenging for the dog?",
                 challengingSituations,
-              )}
-
-              ${emailSection(
-                "Previous Training",
-                trainingHistory,
-              )}
-
-              ${emailSection(
-                "What Motivates the Dog?",
-                dogMotivation,
-              )}
-
-              ${emailSection(
-                "Desired Changes",
-                desiredChanges,
-              )}
-
-              ${emailSection(
-                "Questions for José",
-                ownerQuestions,
               )}
             `
             : ""
         }
 
-        ${
-          service === "board-and-train"
-            ? emailSection(
-                "Board & Train Goals",
-                boardAndTrainGoals,
-              )
-            : ""
-        }
+        <hr
+          style="
+            border:none;
+            border-top:1px solid #e7e5e4;
+            margin:30px 0;
+          "
+        />
 
-        ${emailSection(
-          "Additional Information",
-          additionalInformation,
-        )}
-
-        <hr />
-
-        <p style="color:#78716c; font-size:14px;">
+        <p
+          style="
+            color:#78716c;
+            font-size:14px;
+          "
+        >
           Submitted through topdawgpetcare.com
         </p>
 
       </div>
     `;
 
+    /* --------------------------------
+       SEND WITH RESEND
+    -------------------------------- */
+
     const { data, error } = await resend.emails.send({
       from: `Top Dawg Pet Care <${process.env.RESEND_FROM_EMAIL}>`,
+
       to: [process.env.BOOKING_EMAIL!],
+
+      // Replying to the email goes directly to the customer
       replyTo: email,
+
       subject: `New ${serviceLabel} request — ${firstName} ${lastName}`,
+
       html,
     });
+
+    /* --------------------------------
+       RESEND ERROR
+    -------------------------------- */
 
     if (error) {
       console.error("RESEND ERROR:", error);
 
       return NextResponse.json(
         {
-          error: "The form was received, but the email could not be sent.",
+          error:
+            "The form was received, but the email could not be sent.",
+
           details:
             process.env.NODE_ENV === "development"
               ? error.message
               : undefined,
         },
-        { status: 500 },
+        {
+          status: 500,
+        },
       );
     }
 
@@ -311,13 +330,13 @@ export async function POST(request: NextRequest) {
       success: true,
       emailId: data?.id,
     });
-
-} catch (error) {
+  } catch (error) {
     console.error("INQUIRY ERROR:", error);
 
     return NextResponse.json(
       {
-        error: "The intake form could not be submitted.",
+        error: "The inquiry could not be submitted.",
+
         details:
           process.env.NODE_ENV === "development" &&
           error instanceof Error
@@ -331,6 +350,10 @@ export async function POST(request: NextRequest) {
   }
 }
 
+/* --------------------------------
+   EMAIL SECTION
+-------------------------------- */
+
 function emailSection(
   title: string,
   value?: string | null,
@@ -342,7 +365,9 @@ function emailSection(
   return `
     <div style="margin-bottom:18px;">
       <p style="margin-bottom:6px;">
-        <strong>${escapeHtml(title)}</strong>
+        <strong>
+          ${escapeHtml(title)}
+        </strong>
       </p>
 
       <p style="margin-top:0; line-height:1.6;">
@@ -352,8 +377,12 @@ function emailSection(
   `;
 }
 
+/* --------------------------------
+   ESCAPE USER INPUT
+-------------------------------- */
+
 function escapeHtml(value: string) {
-  return value
+  return String(value)
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")

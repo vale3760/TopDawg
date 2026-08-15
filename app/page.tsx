@@ -6,95 +6,131 @@ import ReviewsSection from "@/components/ReviewsSection";
 export default function HomePage() {
   return (
     <main className="bg-[#faf8f3]">
-      {/* Hero */}
-      <section className="px-6 py-16 md:py-24">
-        <div className="mx-auto grid max-w-7xl items-center gap-14 lg:grid-cols-2">
-          <HeroCarousel />
+    {/* Hero */}
+    <section className="relative min-h-[650px] overflow-hidden">
+      {/* Full background photo */}
+      <Image
+        src="/BoysBeach.jpeg"
+        alt="Top Dawg Pet Care"
+        fill
+        priority
+        sizes="100vw"
+        className="object-cover object-center"
+      />
 
-          <div>
-            <p className="text-xl font-bold uppercase tracking-[0.25em] text-[#051030]">
-              Top Dawg Pet Care
-            </p>
+      {/* 
+        Very light overlay.
+        This keeps the PHOTO clearly visible while making the text readable.
+      */}
+      <div className="absolute inset-0 bg-black/15" />
 
-            <h1 className="mt-4 text-4xl font-medium leading-[1.1] tracking-[-0.03em] text-[#3f3d38] md:text-5xl">
-              Build a bond.
-              <br />
-              Build better behavior.
-            </h1>
+      {/* Slight gradient behind text */}
+      <div className="absolute inset-0 bg-gradient-to-r from-black/45 via-black/15 to-transparent" />
 
-            <p className="mt-6 max-w-xl text-lg leading-8 text-[#6e6962]">
-              Professional dog behavior support, training, and boarding designed
-              to help dogs feel safe, comfortable, and understood.
-            </p>
+      {/* Hero content */}
+      <div className="relative z-10 mx-auto flex min-h-[650px] max-w-7xl items-center px-6 py-20 md:px-8">
+        <div className="max-w-2xl">
+          
+          <p className="text-lg font-bold uppercase tracking-[0.25em] text-white/90">
+            Top Dawg Pet Care
+          </p>
 
-            <div className="mt-8 flex flex-wrap gap-4">
-              <Link
-                href="/availability"
-                className="rounded-full border border-[#355C4B] bg-[#355C4B] px-7 py-3 font-semibold !text-white transition hover:bg-[#3F5748]"
-              >
-                Check Availability
-              </Link>
+          <h1 className="mt-5 text-5xl font-black leading-[1.05] tracking-[-0.03em] text-white md:text-7xl">
+            Build a bond.
+            <br />
+            Build better behavior.
+          </h1>
 
-              <Link
-                href="/services"
-                className="rounded-full border border-[#D7D3CC] bg-[#FAF8F3] px-7 py-3 font-semibold text-[#3F3F3F] transition hover:bg-[#F1ECE4]"
-              >
-                Explore Services
-              </Link>
-            </div>
+          <p className="mt-7 max-w-xl text-lg font-medium leading-8 text-white/90 md:text-xl">
+            Professional dog behavior support, training, and boarding designed
+            to help dogs feel safe, comfortable, and understood.
+          </p>
 
-            <div className="mt-14 flex items-center justify-between gap-6 border-t border-[#ddd7cc] pt-8">
-              <div>
-                <p className="text-xs uppercase tracking-[0.25em] text-[#8b857c]">
-                  Boarding • Training • Behavior Support
-                </p>
+          <div className="mt-9 flex flex-wrap gap-4">
+            <Link
+              href="/availability"
+              className="rounded-full bg-[#051030] px-7 py-3 font-semibold !text-white"
+            >
+              Check Availability
+            </Link>
 
-                <p className="mt-4 text-2xl italic text-[#66715f]">
-                  Build the relationship.
-                  <br />
-                  Build the understanding.
-                </p>
-              </div>
-            </div>
+            <Link
+              href="/services"
+              className="rounded-full border border-white/70 bg-white/15 px-7 py-3 font-semibold !text-white backdrop-blur-sm transition hover:bg-white/25"
+            >
+              Explore Services
+            </Link>
           </div>
+
         </div>
-      </section>
+      </div>
+    </section>
 
       {/* What Is Top Dawg */}
-      <section className="bg-[#EFE8DD] px-6 py-20 md:py-24">
-        <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:items-start">
-          <div>
-          <p className="mt-4 max-w-3xl text-4xl font-black text-[#051030] md:text-5xl">
-          What Is Top Dawg Pet Care?
-        </p>
+      <section className="bg-[#EFE8DD] px-6 py-20 md:py-28">
+        <div className="mx-auto max-w-7xl">
 
-        <h2 className="mt-4 text-xl font-bold uppercase tracking-[0.18em] text-stone-700 md:text-xl">
-          Thoughtful support for dogs and the people who love them.
-        </h2>
-            
-          </div>
+          {/* Main two-column layout */}
+          <div className="mt-5 grid gap-12 lg:grid-cols-[1fr_1.1fr] lg:gap-16">
 
-          <div className="space-y-5 font-bold text-lg leading-8 text-stone-700">
-            <p>
-              Top Dawg Pet Care provides professional dog behavior support,
-              training, and boarding services designed to help dogs feel safe,
-              comfortable, and understood.
-            </p>
+            {/* LEFT */}
+            <div>
+              <h2 className="max-w-xl text-4xl font-black leading-[1.05] text-[#051030] md:text-5xl">
+                What Is Top Dawg
+                <br />
+                Pet Care?
+              </h2>
 
-            <p>
-              Owning a dog can come with its challenges, especially when
-              navigating the unpredictability of an urban environment like San
-              Francisco. I started Top Dawg Pet Care because of my passion for
-              dogs and my desire to help owners build stronger, more trusting
-              relationships with their companions.
-            </p>
+              <p className="mt-5 max-w-lg text-base font-bold uppercase leading-7 tracking-[0.18em] text-stone-600">
+                Thoughtful support for dogs and the people who love them.
+              </p>
 
-            <p>
-              Whether your dog needs help with a specific behavior or simply a
-              comfortable place to stay while you're away, my goal is to
-              provide thoughtful, personalized care based on what each dog
-              needs.
-            </p>
+              {/* Larger photo */}
+              <div className="mt-8">
+                <HeroCarousel group="one"/>
+              </div>
+            </div>
+
+            {/* RIGHT */}
+            <div className="flex items-center">
+              <div className="max-w-2xl">
+
+                <p className="text-xl font-semibold leading-9 text-stone-700">
+                  Top Dawg Pet Care provides professional dog behavior support,
+                  training, and boarding services designed to help dogs feel safe,
+                  comfortable, and understood.
+                </p>
+
+                <div className="my-8 h-px w-20 bg-[#4C6A58]/40" />
+
+                <div className="space-y-6 text-lg leading-8 text-stone-700">
+                  <p>
+                    Owning a dog can come with its challenges, especially when
+                    navigating the unpredictability of an urban environment like San
+                    Francisco.
+                  </p>
+
+                  <p>
+                    I started Top Dawg Pet Care because of my passion for dogs and my
+                    desire to help owners build stronger, more trusting relationships
+                    with their companions.
+                  </p>
+
+                  <p>
+                    Whether your dog needs help with a specific behavior or simply a
+                    comfortable place to stay while you're away, my goal is to provide
+                    thoughtful, personalized care based on what each dog needs.
+                  </p>
+                </div>
+
+                {/* Little finishing statement */}
+                <p className="mt-8 text-xl font-semibold italic text-[#355C4B]">
+                  Care built around the dog in front of me.
+                </p>
+
+              </div>
+            </div>
+
           </div>
         </div>
       </section>
@@ -108,8 +144,6 @@ export default function HomePage() {
           <h2 className="mt-4 max-w-3xl text-4xl font-black text-stone-950 md:text-5xl">
             My Services
           </h2>
-          
-
           
 
           <div className="mt-12 grid gap-6 md:grid-cols-2">
@@ -196,19 +230,27 @@ export default function HomePage() {
       </section>
 
       {/* Approach */}
-      <section className="bg-[#EFE8DD] px-6 py-20 md:py-24">
-        <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-2 lg:items-center">
-          <div className="relative min-h-[460px] overflow-hidden rounded-3xl">
-            <Image
-              src="/gallery/litoPics4.jpg"
-              alt="Dog training with Top Dawg Pet Care"
-              fill
-              sizes="(max-width: 1024px) 100vw, 50vw"
-              className="object-cover"
-            />
-          </div>
+      <section className="relative overflow-hidden px-6 py-24 md:py-32">
 
-          <div>
+        {/* Background photo */}
+        <div className="absolute inset-0">
+          <Image
+            src="/murphy.jpeg"
+            alt=""
+            fill
+            sizes="100vw"
+            className="object-cover object-center"
+          />
+
+          {/* Fade at top and bottom */}
+          <div className="absolute inset-0 bg-gradient-to-b from-[#EFE8DD]/80 via-transparent to-[#EFE8DD]/80" />
+        </div>
+
+        {/* Content */}
+        <div className="relative z-10 mx-auto max-w-7xl">
+
+          <div className="max-w-3xl rounded-3xl bg-[#EFE8DD]/80 p-8 backdrop-blur-[3px] md:p-12">
+
             <p className="text-sm font-bold uppercase tracking-[0.22em] text-[#4C6A58]">
               My Approach
             </p>

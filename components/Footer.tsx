@@ -30,6 +30,10 @@ export default function Footer() {
             <Link href="/contact" className="hover:text-white">
               Contact
             </Link>
+
+            <Link href="/terms" className="hover:text-white">
+              Terms & Conditions
+            </Link>
           </div>
         </div>
 
@@ -44,8 +48,20 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="border-t border-stone-800 px-6 py-6 text-center text-sm text-stone-500">
-        © {new Date().getFullYear()} Top Dawg Pet Care. All rights reserved.
+      <div className="border-t border-stone-800 px-6 py-6">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 text-sm text-stone-500 sm:flex-row">
+          <p>
+            © {new Date().getFullYear()} Top Dawg Pet Care. All rights reserved.
+          </p>
+
+          <Link
+            href="/terms" 
+            scroll={true}
+            className="transition hover:text-white"
+          >
+            Terms & Conditions
+          </Link>
+        </div>
       </div>
     </footer>
   );

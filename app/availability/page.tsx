@@ -10,23 +10,46 @@ export const metadata: Metadata = {
 export default function AvailabilityPage() {
   return (
     <>
-      <section className="bg-stone-950 px-6 py-20 text-white">
-        <div className="mx-auto max-w-7xl">
-          <p className="text-sm font-bold uppercase tracking-[0.22em] text-amber-300">
-            Availability
-          </p>
+      {/* HERO + BOOKING AREA */}
+      <section className="relative min-h-[1400px] overflow-hidden bg-[#2A2F36]">
 
-          <h2 className="mt-5 max-w-4xl text-5xl font-black leading-tight md:text-5xl">
-            Find the right dates for your dog.
-          </h2>
+      {/* MIA */}
+        <img
+          src="/miaP2.png"
+          alt=""
+          aria-hidden
+          className="absolute inset-0 h-full w-full object-cover object-[center_35%]"
+        />
 
-          <p className="mt-7 max-w-2xl text-lg leading-8 text-stone-300">
-            Choose overnight care appointment.
-          </p>
+        {/* Darker LEFT, clearer RIGHT */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#1B2230]/75 via-[#1B2230]/25 to-transparent" />
+
+        <div className="relative z-10">
+
+          {/* HEADING */}
+          <div className="mx-auto max-w-7xl px-6 pb-8 pt-24 md:px-8">
+            <div className="max-w-2xl">
+              <p className="text-lg font-bold uppercase tracking-[0.22em] text-[#C2DCFF]">
+                Availability
+              </p>
+
+              <h1 className="mt-5 text-4xl font-black leading-tight text-white md:text-6xl">
+                Find the right dates
+                <br />
+                for your dog.
+              </h1>
+
+              <p className="mt-6 text-lg text-white/90">
+                Check availability for boarding and overnight care.
+              </p>
+            </div>
+          </div>
+
+          {/* BOOKING */}
+          <BookingCalendar />
+
         </div>
       </section>
-
-      <BookingCalendar />
     </>
   );
 }

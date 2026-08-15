@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import ScrollToTop from "@/components/ScrollToTop";
 import "react-day-picker/style.css";
 
 import Footer from "@/components/Footer";
@@ -22,6 +23,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+        <ScrollToTop />
         <Navbar />
         <main>{children}</main>
         <Footer />

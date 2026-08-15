@@ -1,7 +1,5 @@
 "use client";
 
-import { useState } from "react";
-
 type ContactBookingFieldsProps = {
   initialService?: string;
   initialStartDate?: string;
@@ -11,111 +9,121 @@ type ContactBookingFieldsProps = {
   onServiceChange?: (service: string) => void;
 };
 
+function getServiceTitle(service: string) {
+  switch (service) {
+    case "boarding":
+      return "In-Home Boarding";
+
+    case "board-and-train":
+      return "Board & Train";
+
+    case "assessment":
+      return "Initial Assessment + First Lesson";
+
+    default:
+      return "General Inquiry";
+  }
+}
+
+function formatDate(dateString: string) {
+  if (!dateString) return "";
+
+  const [year, month, day] = dateString.split("-").map(Number);
+
+  const date = new Date(year, month - 1, day);
+
+  return date.toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
 export default function ContactBookingFields({
   initialService = "",
   initialStartDate = "",
   initialEndDate = "",
-  onServiceChange,
 }: ContactBookingFieldsProps) {
-  const [service, setService] = useState(initialService);
-  const [startDate, setStartDate] = useState(initialStartDate);
-  const [endDate, setEndDate] = useState(initialEndDate);
-
   const needsDates =
-    service === "boarding" || service === "board-and-train";
+    initialService === "boarding" ||
+    initialService === "board-and-train";
 
   return (
-    <div className="mt-6">
-      <label className="flex flex-col gap-2">
-        <span className="font-bold text-stone-800">
-          Service you are interested in
-        </span>
-
-        <select
-          name="service"
-          required
-          value={service}
-          onChange={(event) => {
-            const nextService = event.target.value;
-
-            setService(nextService);
-            onServiceChange?.(nextService);
-
-            setStartDate("");
-            setEndDate("");
-          }}
-          className="rounded-xl border border-stone-300 bg-white px-4 py-3 outline-none transition focus:border-[#355C4B] focus:ring-2 focus:ring-[#355C4B]/10"
-        >
-          <option value="">Select a service</option>
-
-          <option value="assessment">
-            Initial Assessment + First Lesson
-          </option>
-
-          <option value="boarding">
-            In-Home Boarding
-          </option>
-
-          <option value="board-and-train">
-            Board & Train
-          </option>
-        </select>
-      </label>
+    <div>
+      {/* Hidden values submitted with the form */}
+      <input
+        type="hidden"
+        name="service"
+        value={initialService}
+      />
 
       {needsDates && (
-        <div className="mt-6">
-          <p className="mb-4 text-sm leading-6 text-stone-500">
-            Tell me the dates you're interested in. Your stay is not
-            confirmed until your request has been reviewed.
-          </p>
+        <>
+          <input
+            type="hidden"
+            name="startDate"
+            value={initialStartDate}
+          />
 
-          <div className="grid gap-6 md:grid-cols-2">
-            <label className="flex flex-col gap-2">
-              <span className="font-bold text-stone-800">
-                Drop-off date
-              </span>
+          <input
+            type="hidden"
+            name="endDate"
+            value={initialEndDate}
+          />
+        </>
+      )}
 
-              <input
-                type="date"
-                name="startDate"
-                required
-                value={startDate}
-                onChange={(event) => setStartDate(event.target.value)}
-                className="rounded-xl border border-stone-300 bg-white px-4 py-3 outline-none transition focus:border-[#355C4B] focus:ring-2 focus:ring-[#355C4B]/10"
-              />
-            </label>
+      {/* SELECTION SUMMARY */}
+      <div className="rounded-2xl border border-stone-200 bg-[#f8f4ec] p-6 md:p-7">
+        <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#4C6A58]">
+          Your Selection
+        </p>
 
-            <label className="flex flex-col gap-2">
-              <span className="font-bold text-stone-800">
-                Pick-up date
-              </span>
+        <h2 className="mt-2 text-2xl font-black text-stone-950">
+          {getServiceTitle(initialService)}
+        </h2>
 
-              <input
-                type="date"
-                name="endDate"
-                required
-                value={endDate}
-                min={startDate || undefined}
-                onChange={(event) => setEndDate(event.target.value)}
-                className="rounded-xl border border-stone-300 bg-white px-4 py-3 outline-none transition focus:border-[#355C4B] focus:ring-2 focus:ring-[#355C4B]/10"
-              />
-            </label>
+        {needsDates && initialStartDate && initialEndDate && (
+          <div className="mt-5 grid gap-4 sm:grid-cols-2">
+            {/* DROP OFF */}
+            <div className="rounded-xl bg-white p-4">
+              <p className="text-xs font-bold uppercase tracking-[0.15em] text-stone-500">
+                Drop-off
+              </p>
+
+              <p className="mt-1 font-bold text-stone-950">
+                {formatDate(initialStartDate)}
+              </p>
+            </div>
+
+            {/* PICK UP */}
+            <div className="rounded-xl bg-white p-4">
+              <p className="text-xs font-bold uppercase tracking-[0.15em] text-stone-500">
+                Pick-up
+              </p>
+
+              <p className="mt-1 font-bold text-stone-950">
+                {formatDate(initialEndDate)}
+              </p>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {service === "assessment" && (
-        <p className="mt-4 text-sm leading-6 text-stone-500">
-          No date is needed yet. After reviewing your intake form, José will
-          reach out to coordinate your initial assessment and first lesson.
-        </p>
-      )}
+        {needsDates && (
+          <p className="mt-4 text-sm leading-6 text-stone-500">
+            These dates were selected from the availability calendar.
+            Your reservation is not confirmed until your request has
+            been reviewed.
+          </p>
+        )}
 
-      {!service && (
-        <p className="mt-4 text-sm text-stone-500">
-          Select a service to get started.
-        </p>
-      )}
+        {initialService === "assessment" && (
+          <p className="mt-4 text-sm leading-6 text-stone-500">
+            After reviewing your inquiry, José will reach out to
+            coordinate your initial assessment and first lesson.
+          </p>
+        )}
+      </div>
     </div>
   );
 }

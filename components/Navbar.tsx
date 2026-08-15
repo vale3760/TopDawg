@@ -34,7 +34,7 @@ export default function Navbar() {
             </Link>
           ))}
           <Link
-          href="/availability"
+          href="/contact?service=assessment"
           className="rounded-full bg-[#051030] px-6 py-3 text-sm font-semibold !text-white shadow-sm transition hover:bg-[#2d4d40]"
           >
             Get In Touch

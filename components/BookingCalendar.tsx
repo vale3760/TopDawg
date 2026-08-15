@@ -126,12 +126,6 @@ useEffect(() => {
   setMounted(true);
 }, []);
 
-function parseLocalDate(value: string) {
-  const [year, month, day] = value.split("-").map(Number);
-
-  return new Date(year, month - 1, day);
-}
-
 function getDogsBookedForDate(date: Date) {
     return boardingBookings.reduce((total, booking) => {
       if (
@@ -205,21 +199,25 @@ function getDogsBookedForDate(date: Date) {
 }, [boardingRange, boardingBookings]);
 
   const contactUrl = useMemo(() => {
-    const params = new URLSearchParams();
+  const params = new URLSearchParams();
 
-    if (
-      boardingRange?.from &&
-      boardingRange.to
-    ) {
-      params.set(
-        "startDate",
-        format(boardingRange.from, "yyyy-MM-dd"),
-      );
-      params.set("endDate", format(boardingRange.to, "yyyy-MM-dd"));
-    }
+  // Pass the selected service to the contact form
+  params.set("service", service);
 
-    return `/contact?${params.toString()}`;
-  }, [service, boardingRange]);
+  if (boardingRange?.from && boardingRange.to) {
+    params.set(
+      "startDate",
+      format(boardingRange.from, "yyyy-MM-dd")
+    );
+
+    params.set(
+      "endDate",
+      format(boardingRange.to, "yyyy-MM-dd")
+    );
+  }
+
+  return `/contact?${params.toString()}`;
+}, [service, boardingRange]);
 
   const canContinue =
     Boolean(
@@ -234,151 +232,204 @@ function getDogsBookedForDate(date: Date) {
     setService(nextService);
     setBoardingRange(undefined);
   }
+return (
+  <section className="bg-transparent py-10">
+    <div className="mx-auto w-[min(1100px,calc(100%-3rem))]">
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,760px)_280px] lg:items-start">
 
-  return (
-    <section className="bg-[#f8f4ec] px-4 py-16 sm:px-6 md:py-24">
-      <div className="mx-auto max-w-6xl">
-        <div className="grid gap-8 lg:grid-cols-[1fr_360px]">
-          <div className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm sm:p-8">
-            <div>
-              <p className="text-sm font-bold uppercase tracking-[0.18em] text-amber-700">
-                Step 1
-              </p>
+  {/* LEFT — CALENDAR */}
+  <div className="rounded-3xl border border-white/40 bg-white/95 p-5 shadow-xl backdrop-blur-sm sm:p-8">
 
-              <h2 className="mt-2 text-3xl font-black text-stone-950">
-                Choose a service
-              </h2>
+    {/* STEP 1 */}
+    <div>
+      <p className="text-sm font-bold uppercase tracking-[0.18em] text-amber-700">
+        Step 1
+      </p>
 
-              <div className="mt-6 grid gap-3 sm:grid-cols-3">
-                <ServiceButton
-                  title="Boarding"
-                  description="$100 per night"
-                  selected={service === "boarding"}
-                  onClick={() => changeService("boarding")}
-                />
+      <h2 className="mt-2 text-3xl font-black text-stone-950">
+        Choose a service
+      </h2>
 
-                <ServiceButton
-                  title="Board & Train"
-                  description="$160 per night"
-                  selected={service === "board-and-train"}
-                  onClick={() => changeService("board-and-train")}
-                />
-              </div>
-            </div>
+      <div className="mt-6 grid max-w-xl gap-3 sm:grid-cols-2">
+        <ServiceButton
+          title="Boarding"
+          description="$100 per night"
+          selected={service === "boarding"}
+          onClick={() => changeService("boarding")}
+        />
 
-            <div className="mt-12">
-              <p className="text-sm font-bold uppercase tracking-[0.18em] text-amber-700">
-                Step 2
-              </p>
+        <ServiceButton
+          title="Board & Train"
+          description="$160 per night"
+          selected={service === "board-and-train"}
+          onClick={() => changeService("board-and-train")}
+        />
+      </div>
+    </div>
 
-              <h2 className="mt-2 text-3xl font-black text-stone-950">
-                Select drop-off and pick-up dates
-              </h2>
+    {/* STEP 2 */}
+    <div className="mt-12">
+      <p className="text-sm font-bold uppercase tracking-[0.18em] text-amber-700">
+        Step 2
+      </p>
 
-              <div className="calendar-wrapper mt-6 overflow-x-auto rounded-2xl border border-stone-200 p-4 sm:p-8">
-                {mounted ? (
-                  <DayPicker
-                    mode="range"
-                    selected={boardingRange}
-                    onSelect={setBoardingRange}
-                    disabled={[{ before: today }, ...fullyBookedDates]}
-                    excludeDisabled
-                    min={1}
-                    showOutsideDays
-                    modifiers={{
-                      oneSpotLeft: oneSpotLeftDates,
-                      fullyBooked: fullyBookedDates,
-                    }}
-                    modifiersClassNames={{
-                      oneSpotLeft:
-                        "!bg-yellow-400 !text-stone-950 rounded-full",
+      <h2 className="mt-2 text-3xl font-black text-stone-950">
+        Select drop-off and pick-up dates
+      </h2>
 
-                      fullyBooked:
-                        "!bg-stone-200 !text-stone-400 !opacity-50 rounded-full cursor-not-allowed",
+      <div className="calendar-wrapper mt-6 overflow-x-auto rounded-2xl border border-stone-200 bg-white p-4 sm:p-8">
+        {mounted ? (
+          <DayPicker
+            mode="range"
+            selected={boardingRange}
+            onSelect={setBoardingRange}
+            disabled={[
+              { before: today },
+              ...fullyBookedDates,
+            ]}
+            excludeDisabled
+            min={1}
+            showOutsideDays
+            modifiers={{
+              oneSpotLeft: oneSpotLeftDates,
+              fullyBooked: fullyBookedDates,
+            }}
+            modifiersClassNames={{
+              oneSpotLeft:
+                "!bg-yellow-400 !text-stone-950 rounded-full",
 
-                      selected:
-                        "!bg-transparent !text-stone-950 !ring-2 !ring-inset !ring-[#4C6A58] rounded-full",
+              fullyBooked:
+                "!bg-stone-200 !text-stone-400 !opacity-50 rounded-full cursor-not-allowed",
 
-                      range_start:
-                        "!bg-transparent !text-stone-950 !ring-2 !ring-inset !ring-[#4C6A58] rounded-full",
+              selected:
+                "!bg-transparent !text-stone-950 !ring-2 !ring-inset !ring-[#4C6A58] rounded-full",
 
-                      range_middle:
-                        "!bg-transparent !text-stone-950 !ring-2 !ring-inset !ring-[#4C6A58] rounded-full",
+              range_start:
+                "!bg-transparent !text-stone-950 !ring-2 !ring-inset !ring-[#4C6A58] rounded-full",
 
-                      range_end:
-                        "!bg-transparent !text-stone-950 !ring-2 !ring-inset !ring-[#4C6A58] rounded-full",
-                    }}
-                  />
-                ) : (
-                  <div className="h-[500px]" />
-                )}
-              </div>
+              range_middle:
+                "!bg-transparent !text-stone-950 !ring-2 !ring-inset !ring-[#4C6A58] rounded-full",
 
-              <div className="mt-5 flex flex-wrap gap-4 text-sm text-stone-600">
-                <CalendarLegend
-                  label="Open"
-                  styleType="open"
-                />
+              range_end:
+                "!bg-transparent !text-stone-950 !ring-2 !ring-inset !ring-[#4C6A58] rounded-full",
+            }}
+          />
+        ) : (
+          <div className="h-[500px]" />
+        )}
+      </div>
 
-                <CalendarLegend
-                  label="1 spot left"
-                  styleType="oneSpotLeft"
-                />
+      {/* LEGEND */}
+      <div className="mt-5 flex flex-wrap gap-4 text-sm text-stone-600">
+        <CalendarLegend
+          label="Open"
+          styleType="open"
+        />
 
-                <CalendarLegend
-                  label="Fully booked"
-                  styleType="full"
-                />
-              </div>
-              
-            </div>
-          </div>
+        <CalendarLegend
+          label="1 spot left"
+          styleType="oneSpotLeft"
+        />
 
-          <aside className="h-fit rounded-3xl bg-stone-950 p-7 text-white lg:sticky lg:top-28">
-            <p className="text-sm font-bold uppercase tracking-[0.18em] text-amber-300">
-              Your selection
+        <CalendarLegend
+          label="Fully booked"
+          styleType="full"
+        />
+      </div>
+    </div>
+  </div>
+
+
+  {/* RIGHT — SMALL SELECTION */}
+  <aside className="rounded-3xl bg-stone-950 p-6 text-white shadow-xl lg:sticky lg:top-28">
+
+    <p className="text-xs font-bold uppercase tracking-[0.18em] text-amber-300">
+      Your Selection
+    </p>
+
+    <h3 className="mt-2 text-lg font-black">
+      {getServiceTitle(service)}
+    </h3>
+
+    {boardingRange?.from ? (
+      <div className="mt-5 space-y-3">
+
+        {/* DROP OFF */}
+        <div>
+          <p className="text-xs text-stone-400">
+            Drop-off
+          </p>
+
+          <p className="font-bold">
+            {format(boardingRange.from, "MMM d, yyyy")}
+          </p>
+        </div>
+
+        {/* PICK UP */}
+        <div>
+          <p className="text-xs text-stone-400">
+            Pick-up
+          </p>
+
+          <p className="font-bold">
+            {boardingRange.to
+              ? format(boardingRange.to, "MMM d, yyyy")
+              : "Select pick-up date"}
+          </p>
+        </div>
+
+        {/* NIGHTS */}
+        {boardingRange.to && selectedNights > 0 && (
+          <div>
+            <p className="text-xs text-stone-400">
+              Stay
             </p>
 
-            <h2 className="mt-3 text-2xl font-black">
-              {getServiceTitle(service)}
-            </h2>
+            <p className="font-bold">
+              {selectedNights}{" "}
+              {selectedNights === 1
+                ? "night"
+                : "nights"}
+            </p>
+          </div>
+        )}
 
-
-              <BoardingSummary
-                range={boardingRange}
-                nights={selectedNights}
-                remainingSpots={minimumRemainingSpots}
-                service={service}
-              />
-
-            <div className="mt-8 border-t border-stone-700 pt-6">
-              <p className="text-sm leading-6 text-stone-400">
-                This is an availability request. Your reservation is not
-                confirmed until Top Dawg Pet Care approves it.
-              </p>
-
-              {canContinue ? (
-                <Link
-                  href={contactUrl}
-                  className="mt-6 block rounded-full bg-amber-300 px-6 py-4 text-center font-bold text-stone-950 transition hover:bg-amber-200"
-                >
-                  Continue to Intake Form
-                </Link>
-              ) : (
-                <button
-                  type="button"
-                  disabled
-                  className="mt-6 w-full cursor-not-allowed rounded-full bg-stone-700 px-6 py-4 font-bold text-stone-400"
-                >
-                  Select availability first
-                </button>
-              )}
-            </div>
-          </aside>
-        </div>
       </div>
-    </section>
-  );
+    ) : (
+      <p className="mt-4 text-sm leading-6 text-stone-400">
+        Select your drop-off and pick-up dates.
+      </p>
+    )}
+
+    {/* CONTINUE */}
+    {canContinue ? (
+      <Link
+        href={contactUrl}
+        className="mt-6 block rounded-full bg-amber-300 px-4 py-3 text-center text-sm font-bold text-stone-950 transition hover:bg-amber-200"
+      >
+        Continue
+      </Link>
+    ) : (
+      <button
+        type="button"
+        disabled
+        className="mt-6 w-full cursor-not-allowed rounded-full bg-stone-800 px-4 py-3 text-sm font-bold text-stone-500"
+      >
+        Select dates
+      </button>
+    )}
+
+    <p className="mt-4 text-xs leading-5 text-stone-500">
+      Your reservation is not confirmed until approved.
+    </p>
+
+          </aside>
+      </div>
+    </div>
+  </section>
+);
+
+  
 }
 
 type ServiceButtonProps = {

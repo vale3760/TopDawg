@@ -4,14 +4,38 @@ import Image from "next/image";
 import useEmblaCarousel from "embla-carousel-react";
 import { useEffect } from "react";
 
-const images = [
-  "/gallery/litoPics1.jpeg",
-  "/gallery/litoPics2.jpeg",
-  "/gallery/litoPics3.jpeg",
-  "/gallery/litoPics4.jpg",
-];
+type HeroCarouselProps = {
+  group?: "one" | "two" | "three";
+};
 
-export default function HeroCarousel() {
+const imageGroups = {
+  one: [
+    "/gallery/litoPics2.jpeg",
+    "/gallery/litoPics4.jpg",
+    "/astraWalking.jpeg",
+    "/EllieLunaGrass.jpeg",
+  ],
+
+  two: [
+    "/capLilyMooseBench.jpeg",
+    "/EllieUp.jpeg",
+    "/KumaGrassLay.jpeg",
+    "/EllieWalk.jpeg",
+  ],
+
+  three: [
+    "/niko.jpeg",
+    "/KumaAndBoys.jpeg",
+    "/mooseOnTop.jpeg",
+    "/moreAstraFar.jpeg",
+  ],
+};
+
+export default function HeroCarousel({
+  group = "one",
+}: HeroCarouselProps) {
+  const images = imageGroups[group];
+
   const [emblaRef, emblaApi] = useEmblaCarousel({
     loop: true,
   });
@@ -35,14 +59,14 @@ export default function HeroCarousel() {
         {images.map((image) => (
           <div
             key={image}
-            className="relative min-w-0 flex-[0_0_100%] aspect-[4/5]"
+            className="relative aspect-[4/5] min-w-0 flex-[0_0_100%]"
           >
             <Image
               src={image}
               alt="Happy dog"
               fill
-              priority
               className="object-cover"
+              sizes="(max-width: 768px) 100vw, 50vw"
             />
           </div>
         ))}

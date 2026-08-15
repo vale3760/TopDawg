@@ -23,17 +23,19 @@ export default function ContactForm({
   >("idle");
 
   const [message, setMessage] = useState("");
-  const [selectedService, setSelectedService] = useState(initialService);
 
-  const isBoarding = selectedService === "boarding";
-  const isBoardAndTrain = selectedService === "board-and-train";
-  const isAssessment = selectedService === "assessment";
+  const isBoarding = initialService === "boarding";
+  const isBoardAndTrain = initialService === "board-and-train";
+  const isAssessment = initialService === "assessment";
 
-  const needsBoardingCare = isBoarding || isBoardAndTrain;
-  const needsTrainingQuestions = isAssessment || isBoardAndTrain;
+  const needsBoardingQuestions =
+    isBoarding || isBoardAndTrain;
+
+  const needsTrainingQuestions =
+    isAssessment || isBoardAndTrain;
 
   async function handleSubmit(
-    event: React.FormEvent<HTMLFormElement>,
+    event: React.FormEvent<HTMLFormElement>
   ) {
     event.preventDefault();
 
@@ -64,7 +66,7 @@ export default function ContactForm({
     }
 
     const payload = {
-      // Owner
+      // OWNER
       firstName:
         formData.get("firstName")?.toString() ?? "",
 
@@ -81,10 +83,7 @@ export default function ContactForm({
       phone:
         formData.get("phone")?.toString() ?? "",
 
-      address:
-        formData.get("address")?.toString() ?? "",
-
-      // Dog
+      // DOG
       dogName:
         formData.get("dogName")?.toString() ?? "",
 
@@ -94,92 +93,46 @@ export default function ContactForm({
       dogAge:
         formData.get("dogAge")?.toString() ?? "",
 
-      dogOwnershipLength:
-        formData
-          .get("dogOwnershipLength")
-          ?.toString() ?? "",
-
       dogPersonality:
         formData.get("dogPersonality")?.toString() ?? "",
 
-      // Booking
+      // BOOKING
       service,
 
-      startDate: startDate || null,
-      endDate: endDate || null,
+      startDate:
+        startDate || null,
+
+      endDate:
+        endDate || null,
 
       requestedDates,
 
-      // Boarding
-      homeAlone:
-        formData.get("homeAlone")?.toString() ?? "",
+      // BOARDING
+      houseTrained:
+        formData.get("houseTrained")?.toString() ?? "",
 
       aroundDogs:
         formData.get("aroundDogs")?.toString() ?? "",
 
-      houseTrained:
-        formData.get("houseTrained")?.toString() ?? "",
-
-      feedingSchedule:
-        formData.get("feedingSchedule")?.toString() ?? "",
-
-      medications:
-        formData.get("medications")?.toString() ?? "",
-
-      allergies:
-        formData.get("allergies")?.toString() ?? "",
-
+      // TRAINING
       behaviorConcerns:
         formData.get("behaviorConcerns")?.toString() ?? "",
 
-      additionalInformation:
-        formData
-          .get("additionalInformation")
-          ?.toString() ?? "",
-
-      // Emergency
-      veterinarian:
-        formData.get("veterinarian")?.toString() ?? "",
-
-      emergencyContact:
-        formData
-          .get("emergencyContact")
-          ?.toString() ?? "",
-
-      emergencyInformation:
-        formData
-          .get("emergencyInformation")
-          ?.toString() ?? "",
-
-      // Training / behavior
       goals:
         formData.get("goals")?.toString() ?? "",
 
       challengingSituations:
         formData.get("challengingSituations")?.toString() ?? "",
-
-      trainingHistory:
-        formData.get("trainingHistory")?.toString() ?? "",
-
-      dogMotivation:
-        formData.get("dogMotivation")?.toString() ?? "",
-
-      desiredChanges:
-        formData.get("desiredChanges")?.toString() ?? "",
-
-      ownerQuestions:
-        formData.get("ownerQuestions")?.toString() ?? "",
-
-      boardAndTrainGoals:
-        formData.get("boardAndTrainGoals")?.toString() ?? "",
     };
 
     try {
       const response = await fetch("/api/inquiries", {
         method: "POST",
+
         headers: {
           "Content-Type": "application/json",
         },
+
         body: JSON.stringify(payload),
       });
 
@@ -188,14 +141,14 @@ export default function ContactForm({
       if (!response.ok) {
         throw new Error(
           result.error ||
-            "The request could not be sent.",
+            "The request could not be sent."
         );
       }
 
       setStatus("success");
 
       setMessage(
-        "Your intake form was sent successfully.",
+        "Your inquiry was sent successfully."
       );
     } catch (error) {
       setStatus("error");
@@ -203,7 +156,7 @@ export default function ContactForm({
       setMessage(
         error instanceof Error
           ? error.message
-          : "Something went wrong while sending the form.",
+          : "Something went wrong while sending the form."
       );
     }
   }
@@ -220,12 +173,12 @@ export default function ContactForm({
         </h2>
 
         <p className="mt-4 text-lg leading-8 text-stone-600">
-          Your booking request has been received.
+          Your inquiry has been received.
         </p>
 
         <p className="mt-2 text-lg leading-8 text-stone-600">
-          José will review your request and contact you
-          within 24 hours.
+          José will review your request and contact you within
+          24 hours.
         </p>
       </div>
     );
@@ -236,14 +189,13 @@ export default function ContactForm({
       onSubmit={handleSubmit}
       className="mx-auto max-w-4xl rounded-3xl border border-stone-200 bg-white p-8 shadow-sm md:p-12"
     >
-      {/* SERVICE */}
+      {/* SELECTED SERVICE / DATES */}
       <ContactBookingFields
         initialService={initialService}
         initialStartDate={initialStartDate}
         initialEndDate={initialEndDate}
         initialDate={initialDate}
         initialTime={initialTime}
-        onServiceChange={setSelectedService}
       />
 
       {/* OWNER INFORMATION */}
@@ -277,31 +229,15 @@ export default function ContactForm({
             type="tel"
             required
           />
-
-          <div className="md:col-span-2">
-            {needsBoardingCare ? (
-              <FormField
-                label="Address"
-                name="address"
-                required
-              />
-            ) : (
-              <FormField
-                label="City / Neighborhood"
-                name="address"
-                placeholder="For example: Dogpatch, Mission, Noe Valley"
-              />
-            )}
-          </div>
         </div>
       </FormSection>
 
       {/* DOG INFORMATION */}
       <FormSection
-        eyebrow="Your Companion"
+        eyebrow="Your Dog"
         title="About Your Dog"
       >
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="grid gap-6 md:grid-cols-3">
           <FormField
             label="Name"
             name="dogName"
@@ -317,207 +253,79 @@ export default function ContactForm({
             label="Age"
             name="dogAge"
           />
-
-          {needsTrainingQuestions && (
-            <FormField
-              label="How long have you had your dog?"
-              name="dogOwnershipLength"
-            />
-          )}
         </div>
 
         <TextAreaField
-          label={
-            needsTrainingQuestions
-              ? "Tell me about your dog's personality, background, and history."
-              : "Tell me a little about your dog and their personality."
-          }
+          label="Tell me a little about your dog."
           name="dogPersonality"
-          rows={5}
+          rows={4}
           required
-          placeholder="What are they like at home? What do they enjoy? What makes them excited, nervous, comfortable, or happy?"
+          placeholder="Their personality and anything you think would be helpful for me to know."
         />
       </FormSection>
 
-      {/* BOARDING INTAKE */}
-      {needsBoardingCare && (
-        <>
-          <FormSection
-            eyebrow="Their Stay"
-            title="Boarding Information"
-          >
-            <TextAreaField
-              label="How does your dog do when left home alone?"
-              name="homeAlone"
-              rows={3}
-              required
-            />
+      {/* BOARDING QUESTIONS */}
+      {needsBoardingQuestions && (
+        <FormSection
+          eyebrow="Their Stay"
+          title="Boarding Information"
+        >
+          <SelectField
+            label="Is your dog house trained?"
+            name="houseTrained"
+            required
+            options={[
+              {
+                value: "yes",
+                label: "Yes",
+              },
+              {
+                value: "mostly",
+                label: "Mostly",
+              },
+              {
+                value: "no",
+                label: "No",
+              },
+            ]}
+          />
 
-            <TextAreaField
-              label="How does your dog do around other dogs?"
-              name="aroundDogs"
-              rows={3}
-              required
-            />
-
-            <SelectField
-              label="Is your dog house trained?"
-              name="houseTrained"
-              required
-              options={[
-                {
-                  value: "yes",
-                  label: "Yes",
-                },
-                {
-                  value: "mostly",
-                  label: "Mostly",
-                },
-                {
-                  value: "no",
-                  label: "No",
-                },
-              ]}
-            />
-
-            <TextAreaField
-              label="Feeding Schedule"
-              name="feedingSchedule"
-              rows={4}
-              required
-              helperText="Please provide enough of your dog's regular food for their entire stay."
-              placeholder="For example: 1 cup at 8 AM and 1 cup at 6 PM."
-            />
-
-            <TextAreaField
-              label="Does your dog take any medications?"
-              name="medications"
-              rows={3}
-              placeholder="List medication, dosage, and schedule. Write 'None' if applicable."
-            />
-
-            <TextAreaField
-              label="Does your dog have any allergies or dietary restrictions?"
-              name="allergies"
-              rows={3}
-              placeholder="Food allergies, treats to avoid, sensitivities, etc."
-            />
-
-            <TextAreaField
-              label="Are there any behaviors or situations I should be aware of?"
-              name="behaviorConcerns"
-              rows={5}
-              required
-              placeholder="For example: reactivity, resource guarding, separation anxiety, fear of strangers, escape behavior, or anything else I should know."
-            />
-
-            <TextAreaField
-              label="Is there anything else you'd like me to know?"
-              name="additionalInformation"
-              rows={4}
-            />
-          </FormSection>
-
-          {/* EMERGENCY */}
-          <FormSection
-            eyebrow="Just In Case"
-            title="Emergency Information"
-          >
-            <div className="grid gap-6 md:grid-cols-2">
-              <FormField
-                label="Veterinarian / Veterinary Hospital"
-                name="veterinarian"
-                required
-              />
-
-              <FormField
-                label="Emergency Contact"
-                name="emergencyContact"
-                required
-                placeholder="Name and phone number"
-              />
-            </div>
-
-            <TextAreaField
-              label="Anything I should know in case of an emergency?"
-              name="emergencyInformation"
-              rows={4}
-              placeholder="Emergency preferences, medical history, or other important information."
-            />
-          </FormSection>
-        </>
+          <TextAreaField
+            label="How does your dog do around other dogs?"
+            name="aroundDogs"
+            rows={3}
+            required
+            placeholder="Tell me briefly how they typically behave around other dogs."
+          />
+        </FormSection>
       )}
 
-      {/* TRAINING / BEHAVIOR */}
+      {/* TRAINING QUESTIONS */}
       {needsTrainingQuestions && (
         <FormSection
-          eyebrow="Training & Behavior"
-          title="Tell Me What You're Working On"
+          eyebrow="Training"
+          title="What Would You Like Help With?"
         >
           <TextAreaField
-            label="What behaviors or challenges are you currently experiencing, and what would you like to accomplish through training?"
-            name="goals"
-            rows={5}
+            label="What behaviors or challenges are you currently experiencing?"
+            name="behaviorConcerns"
+            rows={4}
             required
-            placeholder="Tell me what's happening now and what you would like to see change."
+          />
+
+          <TextAreaField
+            label="What would you like to accomplish through training?"
+            name="goals"
+            rows={4}
+            required
           />
 
           <TextAreaField
             label="What situations are most challenging for your dog?"
             name="challengingSituations"
             rows={4}
-            placeholder="For example: seeing other dogs, visitors, walks, being alone, new environments, handling, or settling at home."
-          />
-
-          <TextAreaField
-            label="Has your dog worked with a trainer or attended training classes before? What techniques were used, and how did your dog respond?"
-            name="trainingHistory"
-            rows={4}
-            placeholder="It's completely okay if this is your dog's first training experience."
-          />
-
-          <TextAreaField
-            label="What motivates your dog?"
-            name="dogMotivation"
-            rows={3}
-            placeholder="Food, toys, play, praise, sniffing, affection, or anything else they love."
-          />
-
-          <TextAreaField
-            label="What changes would make everyday life with your dog easier or more enjoyable?"
-            name="desiredChanges"
-            rows={4}
             required
-            placeholder="Think about what you'd love daily life together to look like."
-          />
-
-          <TextAreaField
-            label="What questions do you have for me?"
-            name="ownerQuestions"
-            rows={4}
-            placeholder="Ask anything you'd like to discuss during your assessment."
-          />
-
-          <TextAreaField
-            label="Is there anything else about your dog's behavior, personality, or history that would be helpful for me to know?"
-            name="additionalInformation"
-            rows={4}
-          />
-        </FormSection>
-      )}
-
-      {/* BOARD & TRAIN */}
-      {isBoardAndTrain && (
-        <FormSection
-          eyebrow="Board & Train"
-          title="Goals for Their Stay"
-        >
-          <TextAreaField
-            label="What specific behaviors would you like me to work on during your dog's stay?"
-            name="boardAndTrainGoals"
-            rows={5}
-            required
-            placeholder="Tell me which behaviors or skills you'd most like the stay to focus on."
+            placeholder="For example: walks, other dogs, visitors, being alone, new environments, etc."
           />
         </FormSection>
       )}
@@ -531,7 +339,7 @@ export default function ContactForm({
         >
           {status === "loading"
             ? "Sending..."
-            : "Submit Intake Form"}
+            : "Submit Inquiry"}
         </button>
 
         {message && (
@@ -557,9 +365,9 @@ export default function ContactForm({
   );
 }
 
-/* ------------------------------
+/* --------------------------------
    FORM COMPONENTS
------------------------------- */
+-------------------------------- */
 
 function FormSection({
   eyebrow,
@@ -606,8 +414,11 @@ function FormField({
     <label className="flex flex-col gap-2">
       <span className="font-bold text-stone-800">
         {label}
+
         {required && (
-          <span className="ml-1 text-amber-700">*</span>
+          <span className="ml-1 text-amber-700">
+            *
+          </span>
         )}
       </span>
 
@@ -628,29 +439,24 @@ function TextAreaField({
   rows = 4,
   required = false,
   placeholder,
-  helperText,
 }: {
   label: string;
   name: string;
   rows?: number;
   required?: boolean;
   placeholder?: string;
-  helperText?: string;
 }) {
   return (
     <label className="flex flex-col gap-2">
       <span className="font-bold text-stone-800">
         {label}
+
         {required && (
-          <span className="ml-1 text-amber-700">*</span>
+          <span className="ml-1 text-amber-700">
+            *
+          </span>
         )}
       </span>
-
-      {helperText && (
-        <span className="text-sm leading-6 text-stone-500">
-          {helperText}
-        </span>
-      )}
 
       <textarea
         name={name}
@@ -681,8 +487,11 @@ function SelectField({
     <label className="flex flex-col gap-2">
       <span className="font-bold text-stone-800">
         {label}
+
         {required && (
-          <span className="ml-1 text-amber-700">*</span>
+          <span className="ml-1 text-amber-700">
+            *
+          </span>
         )}
       </span>
 
