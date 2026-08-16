@@ -11,41 +11,77 @@ export default function AvailabilityPage() {
   return (
     <>
       {/* HERO + BOOKING AREA */}
-      <section className="relative min-h-[1400px] overflow-hidden bg-[#2A2F36]">
+      <section className="relative min-h-screen overflow-hidden bg-[#2A2F36]">
 
-      {/* MIA */}
+        {/* MIA BACKGROUND */}
         <img
           src="/miaP2.png"
           alt=""
           aria-hidden
-          className="absolute inset-0 h-full w-full object-cover object-[center_35%]"
+          className="
+            absolute inset-0
+            h-full w-full
+            object-cover
+            object-[65%_top]
+            sm:object-[60%_top]
+            lg:object-[center_35%]
+          "
         />
 
-        {/* Darker LEFT, clearer RIGHT */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#1B2230]/75 via-[#1B2230]/25 to-transparent" />
+        {/* MOBILE OVERLAY */}
+        <div className="absolute inset-0 bg-black/25 lg:hidden" />
 
+        {/* DESKTOP GRADIENT */}
+        <div
+          className="
+            absolute inset-0
+            hidden
+            bg-gradient-to-r
+            from-[#1B2230]/75
+            via-[#1B2230]/25
+            to-transparent
+            lg:block
+          "
+        />
+
+        {/* CONTENT */}
         <div className="relative z-10">
 
           {/* HEADING */}
-          <div className="mx-auto max-w-7xl px-6 pb-8 pt-24 md:px-8">
+          <div
+            className="
+              mx-auto
+              max-w-7xl
+              px-5
+              pb-6
+              pt-14
+              sm:px-6
+              sm:pb-8
+              sm:pt-20
+              md:px-8
+              md:pt-24
+            "
+          >
             <div className="max-w-2xl">
-              <p className="text-lg font-bold uppercase tracking-[0.22em] text-[#C2DCFF]">
+
+              <p className="text-sm font-bold uppercase tracking-[0.2em] text-[#C2DCFF] sm:text-base sm:tracking-[0.22em] md:text-lg">
                 Availability
               </p>
 
-              <h1 className="mt-5 text-4xl font-black leading-tight text-white md:text-6xl">
+              <h1 className="mt-4 text-3xl font-black leading-tight text-white sm:text-4xl md:mt-5 md:text-6xl">
                 Find the right dates
                 <br />
                 for your dog.
               </h1>
 
-              <p className="mt-6 text-lg text-white/90">
+              <p className="mt-4 max-w-xl text-base leading-7 text-white/90 sm:mt-6 sm:text-lg">
                 Check availability for boarding and overnight care.
               </p>
+
             </div>
           </div>
 
-          {/* BOOKING */}
+          {/* BOOKING CALENDAR */}
           <BookingCalendar />
 
         </div>

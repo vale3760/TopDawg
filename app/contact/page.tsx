@@ -55,7 +55,7 @@ export default async function ContactPage({
       </section>
 
       {/* FORM */}
-      <section className="bg-[#f8f4ec] px-6 py-24">
+      <section className="bg-[#f8f4ec] px-5 py-16 sm:px-6 sm:py-20 md:py-24">
         <ContactForm
           initialService={service}
           initialStartDate={params.startDate}

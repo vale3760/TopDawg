@@ -6,11 +6,17 @@ import {
   DayPicker,
   type DateRange,
 } from "react-day-picker";
-import { differenceInCalendarDays, eachDayOfInterval, format } from "date-fns";
+import {
+  differenceInCalendarDays,
+  eachDayOfInterval,
+  format,
+} from "date-fns";
+
 import "react-day-picker/style.css";
 
-
-type ServiceType = "boarding" | "board-and-train";
+type ServiceType =
+  | "boarding"
+  | "board-and-train";
 
 type BoardingBooking = {
   id: string;
@@ -20,47 +26,68 @@ type BoardingBooking = {
   numberOfDogs: number;
 };
 
-const BOARDING_CAPACITY = 2;
-
 function normalizeDate(date: Date) {
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
-}
-
-function sameDay(first: Date, second: Date) {
-  return (
-    first.getFullYear() === second.getFullYear() &&
-    first.getMonth() === second.getMonth() &&
-    first.getDate() === second.getDate()
+  return new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
   );
 }
 
-function isDateDuringStay(
-  date: Date,
-  startDate: Date,
-  endDate: Date,
-) {
-  const selectedDate = normalizeDate(date).getTime();
-  const start = normalizeDate(startDate).getTime();
-  const end = normalizeDate(endDate).getTime();
+function parseLocalDate(dateString: string) {
+  const [year, month, day] =
+    dateString.split("-").map(Number);
 
-  // Checkout day does not count as an occupied night.
-  return selectedDate >= start && selectedDate < end;
+  return new Date(
+    year,
+    month - 1,
+    day,
+  );
 }
 
-function parseLocalDate(dateString: string) {
-  const [year, month, day] = dateString.split("-").map(Number);
-  return new Date(year, month - 1, day);
+function sameDay(
+  first: Date,
+  second: Date,
+) {
+  return (
+    first.getFullYear() ===
+      second.getFullYear() &&
+    first.getMonth() ===
+      second.getMonth() &&
+    first.getDate() ===
+      second.getDate()
+  );
 }
 
 export default function BookingCalendar() {
-  const [service, setService] = useState<ServiceType>("boarding");
-  const [boardingRange, setBoardingRange] = useState<DateRange>();
-  const [boardingBookings, setBoardingBookings] = useState<BoardingBooking[]>([]);
+  const [service, setService] =
+    useState<ServiceType>("boarding");
 
-  const today = useMemo(() => normalizeDate(new Date()), []);
+  const [boardingRange, setBoardingRange] =
+    useState<DateRange>();
+
+  const [boardingBookings, setBoardingBookings] =
+    useState<BoardingBooking[]>([]);
+
+  const [availabilityLoading, setAvailabilityLoading] =
+    useState(true);
+
+  const [availabilityError, setAvailabilityError] =
+    useState(false);
+
+  const [mounted, setMounted] =
+    useState(false);
+
+  const today = useMemo(
+    () => normalizeDate(new Date()),
+    [],
+  );
 
   const selectedNights = useMemo(() => {
-    if (!boardingRange?.from || !boardingRange.to) {
+    if (
+      !boardingRange?.from ||
+      !boardingRange.to
+    ) {
       return 0;
     }
 
@@ -70,366 +97,469 @@ export default function BookingCalendar() {
     );
   }, [boardingRange]);
 
+  /* ------------------------------
+     LOAD GOOGLE CALENDAR
+  ------------------------------ */
+
   useEffect(() => {
-  async function loadBookings() {
-    try {
-      const response = await fetch("/api/calendar/availability", {
-        cache: "no-store",
-      });
+    async function loadBookings() {
+      try {
+        setAvailabilityLoading(true);
+        setAvailabilityError(false);
 
-      const rawText = await response.text();
+        const response = await fetch(
+          "/api/calendar/availability",
+          {
+            cache: "no-store",
+          },
+        );
 
-      console.log("Availability response:", {
-        status: response.status,
-        statusText: response.statusText,
-        body: rawText,
-      });
+        const rawText =
+          await response.text();
 
-      if (!response.ok) {
-        console.error("Availability API failed:", {
-          status: response.status,
-          statusText: response.statusText,
-          body: rawText,
-        });
+        if (!response.ok) {
+          console.error(
+            "Availability API failed:",
+            response.status,
+            response.statusText,
+            rawText,
+          );
 
-        return;
+          setAvailabilityError(true);
+          return;
+        }
+
+        const data =
+          JSON.parse(rawText);
+
+        setBoardingBookings(
+          data.bookings.map(
+            (booking: {
+              id: string;
+              name: string;
+              startDate: string;
+              endDate: string;
+              numberOfDogs: number;
+            }) => ({
+              ...booking,
+
+              startDate:
+                parseLocalDate(
+                  booking.startDate,
+                ),
+
+              endDate:
+                parseLocalDate(
+                  booking.endDate,
+                ),
+            }),
+          ),
+        );
+      } catch (error) {
+        console.error(
+          "Failed to load availability:",
+          error,
+        );
+
+        setAvailabilityError(true);
+      } finally {
+        setAvailabilityLoading(false);
       }
-
-      const data = JSON.parse(rawText);
-
-      setBoardingBookings(
-        data.bookings.map(
-          (booking: {
-            id: string;
-            name: string;
-            startDate: string;
-            endDate: string;
-            numberOfDogs: number;
-          }) => ({
-            ...booking,
-            startDate: parseLocalDate(booking.startDate),
-            endDate: parseLocalDate(booking.endDate),
-          }),
-        ),
-      );
-    } catch (error) {
-      console.error("Failed to load availability:", error);
     }
-  }
 
-  void loadBookings();
-}, []);
+    void loadBookings();
+  }, []);
 
-const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
-useEffect(() => {
-  setMounted(true);
-}, []);
+  /* ------------------------------
+     ALL DATES WE SHOW
+  ------------------------------ */
 
-function getDogsBookedForDate(date: Date) {
-    return boardingBookings.reduce((total, booking) => {
-      if (
-        isDateDuringStay(
-          date,
-          booking.startDate,
-          booking.endDate
-        )
-      ) {
-        return total + booking.numberOfDogs;
-      }
-
-      return total;
-    }, 0);
-  }
-
-  function getRemainingBoardingSpots(date: Date) {
-    return Math.max(
-      0,
-      BOARDING_CAPACITY - getDogsBookedForDate(date)
-    );
-  }
-
-  const calendarDates = useMemo(
-  () =>
-    eachDayOfInterval({
+  const calendarDates = useMemo(() => {
+    return eachDayOfInterval({
       start: today,
+
       end: new Date(
         today.getFullYear() + 1,
         today.getMonth(),
         today.getDate(),
       ),
-    }),
-  [today],
-);
-
-  const oneSpotLeftDates = useMemo(
-    () =>
-      calendarDates.filter(
-        (date) => getDogsBookedForDate(date) === 1,
-      ),
-    [calendarDates, boardingBookings],
-  );
-
-    const fullyBookedDates = useMemo(
-      () =>
-        calendarDates.filter(
-          (date) =>
-            getDogsBookedForDate(date) >= BOARDING_CAPACITY,
-        ),
-      [calendarDates, boardingBookings],
-    );
-
-  const minimumRemainingSpots = useMemo(() => {
-    if (!boardingRange?.from || !boardingRange.to) {
-      return undefined;
-    }
-
-    const nights = eachDayOfInterval({
-      start: boardingRange.from,
-      end: new Date(
-        boardingRange.to.getFullYear(),
-        boardingRange.to.getMonth(),
-        boardingRange.to.getDate() - 1,
-      ),
     });
+  }, [today]);
 
-    return Math.min(
-      ...nights.map((date) => getRemainingBoardingSpots(date)),
+  /* ------------------------------
+     AVAILABLE DATES
+  ------------------------------ */
+
+  const availableDates = useMemo(() => {
+    const dates: Date[] = [];
+
+    boardingBookings.forEach(
+      (booking) => {
+        if (
+          booking.name
+            .trim()
+            .toLowerCase() !==
+          "available"
+        ) {
+          return;
+        }
+
+        const current =
+          new Date(
+            booking.startDate,
+          );
+
+        while (
+          current <
+          booking.endDate
+        ) {
+          dates.push(
+            new Date(current),
+          );
+
+          current.setDate(
+            current.getDate() + 1,
+          );
+        }
+      },
     );
-}, [boardingRange, boardingBookings]);
 
-  const contactUrl = useMemo(() => {
-  const params = new URLSearchParams();
+    return dates;
+  }, [boardingBookings]);
 
-  // Pass the selected service to the contact form
-  params.set("service", service);
+  /* ------------------------------
+     EVERYTHING ELSE = UNAVAILABLE
+  ------------------------------ */
 
-  if (boardingRange?.from && boardingRange.to) {
-    params.set(
-      "startDate",
-      format(boardingRange.from, "yyyy-MM-dd")
-    );
+  const unavailableDates =
+    useMemo(() => {
+      return calendarDates.filter(
+        (date) =>
+          !availableDates.some(
+            (availableDate) =>
+              sameDay(
+                date,
+                availableDate,
+              ),
+          ),
+      );
+    }, [
+      calendarDates,
+      availableDates,
+    ]);
 
-    params.set(
-      "endDate",
-      format(boardingRange.to, "yyyy-MM-dd")
-    );
-  }
+  /* ------------------------------
+     CONTACT URL
+  ------------------------------ */
 
-  return `/contact?${params.toString()}`;
-}, [service, boardingRange]);
+  const contactUrl =
+    useMemo(() => {
+      const params =
+        new URLSearchParams();
+
+      params.set(
+        "service",
+        service,
+      );
+
+      if (
+        boardingRange?.from &&
+        boardingRange.to
+      ) {
+        params.set(
+          "startDate",
+          format(
+            boardingRange.from,
+            "yyyy-MM-dd",
+          ),
+        );
+
+        params.set(
+          "endDate",
+          format(
+            boardingRange.to,
+            "yyyy-MM-dd",
+          ),
+        );
+      }
+
+      return `/contact?${params.toString()}`;
+    }, [
+      service,
+      boardingRange,
+    ]);
 
   const canContinue =
     Boolean(
-          boardingRange?.from &&
-            boardingRange.to &&
-            selectedNights > 0 &&
-            minimumRemainingSpots !== undefined &&
-            minimumRemainingSpots > 0,
-        );
+      boardingRange?.from &&
+        boardingRange.to &&
+        selectedNights > 0,
+    );
 
-  function changeService(nextService: ServiceType) {
+  function changeService(
+    nextService: ServiceType,
+  ) {
     setService(nextService);
-    setBoardingRange(undefined);
+
+    setBoardingRange(
+      undefined,
+    );
   }
-return (
-  <section className="bg-transparent py-10">
-    <div className="mx-auto w-[min(1100px,calc(100%-3rem))]">
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,760px)_280px] lg:items-start">
 
-  {/* LEFT — CALENDAR */}
-  <div className="rounded-3xl border border-white/40 bg-white/95 p-5 shadow-xl backdrop-blur-sm sm:p-8">
+  return (
+    <section className="bg-transparent px-4 pb-16 pt-6 sm:px-6 sm:pb-20 sm:pt-10">
+      <div className="mx-auto w-full max-w-[1100px]">
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,760px)_280px] lg:items-start">
 
-    {/* STEP 1 */}
-    <div>
-      <p className="text-sm font-bold uppercase tracking-[0.18em] text-amber-700">
-        Step 1
-      </p>
+          {/* LEFT */}
+          <div className="min-w-0 rounded-2xl border border-white/40 bg-white/95 p-4 shadow-xl backdrop-blur-sm sm:rounded-3xl sm:p-8">
 
-      <h2 className="mt-2 text-3xl font-black text-stone-950">
-        Choose a service
-      </h2>
+            {/* STEP 1 */}
+            <div>
+              <p className="text-sm font-bold uppercase tracking-[0.18em] text-amber-700">
+                Step 1
+              </p>
 
-      <div className="mt-6 grid max-w-xl gap-3 sm:grid-cols-2">
-        <ServiceButton
-          title="Boarding"
-          description="$100 per night"
-          selected={service === "boarding"}
-          onClick={() => changeService("boarding")}
-        />
+              <h2 className="mt-2 text-3xl font-black text-stone-950">
+                Choose a service
+              </h2>
 
-        <ServiceButton
-          title="Board & Train"
-          description="$160 per night"
-          selected={service === "board-and-train"}
-          onClick={() => changeService("board-and-train")}
-        />
-      </div>
-    </div>
+              <div className="mt-6 grid max-w-xl gap-3 sm:grid-cols-2">
+                <ServiceButton
+                  title="Boarding"
+                  description="$100 per night"
+                  selected={
+                    service ===
+                    "boarding"
+                  }
+                  onClick={() =>
+                    changeService(
+                      "boarding",
+                    )
+                  }
+                />
 
-    {/* STEP 2 */}
-    <div className="mt-12">
-      <p className="text-sm font-bold uppercase tracking-[0.18em] text-amber-700">
-        Step 2
-      </p>
+                <ServiceButton
+                  title="Board & Train"
+                  description="$160 per night"
+                  selected={
+                    service ===
+                    "board-and-train"
+                  }
+                  onClick={() =>
+                    changeService(
+                      "board-and-train",
+                    )
+                  }
+                />
+              </div>
+            </div>
 
-      <h2 className="mt-2 text-3xl font-black text-stone-950">
-        Select drop-off and pick-up dates
-      </h2>
+            {/* STEP 2 */}
+            <div className="mt-12">
+              <p className="text-sm font-bold uppercase tracking-[0.18em] text-amber-700">
+                Step 2
+              </p>
 
-      <div className="calendar-wrapper mt-6 overflow-x-auto rounded-2xl border border-stone-200 bg-white p-4 sm:p-8">
-        {mounted ? (
-          <DayPicker
-            mode="range"
-            selected={boardingRange}
-            onSelect={setBoardingRange}
-            disabled={[
-              { before: today },
-              ...fullyBookedDates,
-            ]}
-            excludeDisabled
-            min={1}
-            showOutsideDays
-            modifiers={{
-              oneSpotLeft: oneSpotLeftDates,
-              fullyBooked: fullyBookedDates,
-            }}
-            modifiersClassNames={{
-              oneSpotLeft:
-                "!bg-yellow-400 !text-stone-950 rounded-full",
+              <h2 className="mt-2 text-3xl font-black text-stone-950">
+                Select drop-off and pick-up dates
+              </h2>
 
-              fullyBooked:
-                "!bg-stone-200 !text-stone-400 !opacity-50 rounded-full cursor-not-allowed",
+              {availabilityLoading && (
+                <p className="mt-5 text-sm text-stone-500">
+                  Loading availability...
+                </p>
+              )}
 
-              selected:
-                "!bg-transparent !text-stone-950 !ring-2 !ring-inset !ring-[#4C6A58] rounded-full",
+              {availabilityError && (
+                <div className="mt-5 rounded-xl bg-red-50 p-4 text-sm text-red-700">
+                  Availability could not be loaded right now.
+                  Please try again.
+                </div>
+              )}
 
-              range_start:
-                "!bg-transparent !text-stone-950 !ring-2 !ring-inset !ring-[#4C6A58] rounded-full",
+              <div className="calendar-wrapper mt-6 overflow-x-auto rounded-2xl border border-stone-200 bg-white p-4 sm:p-8">
+                {mounted ? (
+                  <DayPicker
+                    mode="range"
 
-              range_middle:
-                "!bg-transparent !text-stone-950 !ring-2 !ring-inset !ring-[#4C6A58] rounded-full",
+                    selected={
+                      boardingRange
+                    }
 
-              range_end:
-                "!bg-transparent !text-stone-950 !ring-2 !ring-inset !ring-[#4C6A58] rounded-full",
-            }}
-          />
-        ) : (
-          <div className="h-[500px]" />
-        )}
-      </div>
+                    onSelect={
+                      setBoardingRange
+                    }
 
-      {/* LEGEND */}
-      <div className="mt-5 flex flex-wrap gap-4 text-sm text-stone-600">
-        <CalendarLegend
-          label="Open"
-          styleType="open"
-        />
+                    disabled={[
+                      {
+                        before:
+                          today,
+                      },
 
-        <CalendarLegend
-          label="1 spot left"
-          styleType="oneSpotLeft"
-        />
+                      ...unavailableDates,
+                    ]}
 
-        <CalendarLegend
-          label="Fully booked"
-          styleType="full"
-        />
-      </div>
-    </div>
-  </div>
+                    excludeDisabled
+                    min={1}
+                    showOutsideDays
 
+                    modifiers={{
+                      available:
+                        availableDates,
 
-  {/* RIGHT — SMALL SELECTION */}
-  <aside className="rounded-3xl bg-stone-950 p-6 text-white shadow-xl lg:sticky lg:top-28">
+                      unavailable:
+                        unavailableDates,
+                    }}
 
-    <p className="text-xs font-bold uppercase tracking-[0.18em] text-amber-300">
-      Your Selection
-    </p>
+                    modifiersClassNames={{
+                      available:
+                        "!bg-green-100 !text-green-800 !font-bold rounded-full",
 
-    <h3 className="mt-2 text-lg font-black">
-      {getServiceTitle(service)}
-    </h3>
+                      unavailable:
+                        "!bg-red-100 !text-red-700 !font-bold rounded-full cursor-not-allowed",
 
-    {boardingRange?.from ? (
-      <div className="mt-5 space-y-3">
+                      selected:
+                        "!bg-transparent !text-stone-950 !ring-2 !ring-inset !ring-[#051030] rounded-full",
 
-        {/* DROP OFF */}
-        <div>
-          <p className="text-xs text-stone-400">
-            Drop-off
-          </p>
+                      range_start:
+                        "!bg-transparent !text-stone-950 !ring-2 !ring-inset !ring-[#051030] rounded-full",
 
-          <p className="font-bold">
-            {format(boardingRange.from, "MMM d, yyyy")}
-          </p>
-        </div>
+                      range_middle:
+                        "!bg-transparent !text-stone-950 !ring-2 !ring-inset !ring-[#051030] rounded-full",
 
-        {/* PICK UP */}
-        <div>
-          <p className="text-xs text-stone-400">
-            Pick-up
-          </p>
+                      range_end:
+                        "!bg-transparent !text-stone-950 !ring-2 !ring-inset !ring-[#051030] rounded-full",
+                    }}
+                  />
+                ) : (
+                  <div className="h-[500px]" />
+                )}
+              </div>
 
-          <p className="font-bold">
-            {boardingRange.to
-              ? format(boardingRange.to, "MMM d, yyyy")
-              : "Select pick-up date"}
-          </p>
-        </div>
+              {/* LEGEND */}
+              <div className="mt-5 flex flex-wrap gap-4 text-sm text-stone-600">
 
-        {/* NIGHTS */}
-        {boardingRange.to && selectedNights > 0 && (
-          <div>
-            <p className="text-xs text-stone-400">
-              Stay
-            </p>
+                <CalendarLegend
+                  label="Available"
+                  styleType="available"
+                />
 
-            <p className="font-bold">
-              {selectedNights}{" "}
-              {selectedNights === 1
-                ? "night"
-                : "nights"}
-            </p>
+                <CalendarLegend
+                  label="Unavailable"
+                  styleType="unavailable"
+                />
+
+                <CalendarLegend
+                  label="Selected"
+                  styleType="selected"
+                />
+
+              </div>
+            </div>
           </div>
-        )}
 
-      </div>
-    ) : (
-      <p className="mt-4 text-sm leading-6 text-stone-400">
-        Select your drop-off and pick-up dates.
-      </p>
-    )}
+          {/* RIGHT */}
+          <aside className="rounded-3xl bg-stone-950 p-6 text-white shadow-xl lg:sticky lg:top-28">
 
-    {/* CONTINUE */}
-    {canContinue ? (
-      <Link
-        href={contactUrl}
-        className="mt-6 block rounded-full bg-amber-300 px-4 py-3 text-center text-sm font-bold text-stone-950 transition hover:bg-amber-200"
-      >
-        Continue
-      </Link>
-    ) : (
-      <button
-        type="button"
-        disabled
-        className="mt-6 w-full cursor-not-allowed rounded-full bg-stone-800 px-4 py-3 text-sm font-bold text-stone-500"
-      >
-        Select dates
-      </button>
-    )}
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-amber-300">
+              Your Selection
+            </p>
 
-    <p className="mt-4 text-xs leading-5 text-stone-500">
-      Your reservation is not confirmed until approved.
-    </p>
+            <h3 className="mt-2 text-lg font-black">
+              {getServiceTitle(
+                service,
+              )}
+            </h3>
 
+            {boardingRange?.from ? (
+              <div className="mt-5 space-y-3">
+
+                <div>
+                  <p className="text-xs text-stone-400">
+                    Drop-off
+                  </p>
+
+                  <p className="font-bold">
+                    {format(
+                      boardingRange.from,
+                      "MMM d, yyyy",
+                    )}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-xs text-stone-400">
+                    Pick-up
+                  </p>
+
+                  <p className="font-bold">
+                    {boardingRange.to
+                      ? format(
+                          boardingRange.to,
+                          "MMM d, yyyy",
+                        )
+                      : "Select pick-up date"}
+                  </p>
+                </div>
+
+                {boardingRange.to &&
+                  selectedNights >
+                    0 && (
+                    <div>
+                      <p className="text-xs text-stone-400">
+                        Stay
+                      </p>
+
+                      <p className="font-bold">
+                        {
+                          selectedNights
+                        }{" "}
+                        {selectedNights ===
+                        1
+                          ? "night"
+                          : "nights"}
+                      </p>
+                    </div>
+                  )}
+              </div>
+            ) : (
+              <p className="mt-4 text-sm leading-6 text-stone-400">
+                Select your
+                drop-off and
+                pick-up dates.
+              </p>
+            )}
+
+            {canContinue ? (
+              <Link
+                href={contactUrl}
+                className="mt-6 block rounded-full bg-amber-300 px-4 py-3 text-center text-sm font-bold text-stone-950 transition hover:bg-amber-200"
+              >
+                Continue
+              </Link>
+            ) : (
+              <button
+                type="button"
+                disabled
+                className="mt-6 w-full cursor-not-allowed rounded-full bg-stone-800 px-4 py-3 text-sm font-bold text-stone-500"
+              >
+                Select dates
+              </button>
+            )}
+
+            <p className="mt-4 text-xs leading-5 text-stone-500">
+              Your reservation is not confirmed until approved.
+            </p>
           </aside>
+        </div>
       </div>
-    </div>
-  </section>
-);
-
-  
+    </section>
+  );
 }
 
 type ServiceButtonProps = {
@@ -451,15 +581,21 @@ function ServiceButton({
       onClick={onClick}
       className={[
         "rounded-2xl border p-5 text-left transition",
+
         selected
           ? "border-stone-950 bg-stone-950 text-white"
           : "border-stone-200 bg-white text-stone-950 hover:border-amber-500",
       ].join(" ")}
     >
-      <span className="block text-lg font-black">{title}</span>
+      <span className="block text-lg font-black">
+        {title}
+      </span>
+
       <span
         className={`mt-2 block text-sm ${
-          selected ? "text-stone-300" : "text-stone-500"
+          selected
+            ? "text-stone-300"
+            : "text-stone-500"
         }`}
       >
         {description}
@@ -468,112 +604,46 @@ function ServiceButton({
   );
 }
 
-type BoardingSummaryProps = {
-  range: DateRange | undefined;
-  nights: number;
-  remainingSpots: number | undefined;
-  service: "boarding" | "board-and-train";
-};
-
-function BoardingSummary({
-  range,
-  nights,
-  remainingSpots,
-  service,
-}: BoardingSummaryProps) {
-  const nightlyPrice = service === "boarding" ? 100 : 160;
-
-  if (!range?.from) {
-    return (
-      <p className="mt-6 leading-7 text-stone-400">
-        Select your dogs drop-off and pick-up dates.
-      </p>
-    );
-  }
-
-  return (
-    <div className="mt-6 space-y-5">
-      <SummaryRow
-        label="Drop-off"
-        value={format(range.from, "MMM d, yyyy")}
-      />
-
-      <SummaryRow
-        label="Pick-up"
-        value={
-          range.to ? format(range.to, "MMM d, yyyy") : "Select a date"
-        }
-      />
-
-      {range.to && nights > 0 && (
-        <>
-          <SummaryRow
-            label="Length"
-            value={`${nights} ${nights === 1 ? "night" : "nights"}`}
-          />
-
-          <SummaryRow
-            label="Estimated price"
-            value={`$${nights * nightlyPrice}`}
-          />
-
-          <div className="rounded-2xl bg-stone-900 p-4">
-            <p className="text-sm text-stone-400">
-              Minimum availability during this stay
-            </p>
-
-            <p className="mt-2 text-2xl font-black text-amber-300">
-              {remainingSpots ?? 0} of {BOARDING_CAPACITY} spots remaining
-            </p>
-          </div>
-        </>
-      )}
-    </div>
-  );
-}
-
-function SummaryRow({
-  label,
-  value,
-}: {
-  label: string;
-  value: string;
-}) {
-  return (
-    <div className="flex justify-between gap-4 border-b border-stone-800 pb-4">
-      <span className="text-stone-400">{label}</span>
-      <span className="text-right font-bold">{value}</span>
-    </div>
-  );
-}
-
 function CalendarLegend({
   label,
   styleType,
 }: {
   label: string;
-  styleType: "open" | "oneSpotLeft" | "full";
+
+  styleType:
+    | "available"
+    | "unavailable"
+    | "selected";
 }) {
   const styles = {
-    open: "border border-stone-300 bg-white",
-    oneSpotLeft: "bg-yellow-400",
-    full: "bg-stone-300 opacity-50",
+    available:
+      "bg-green-100 border border-green-300",
+
+    unavailable:
+      "bg-red-100 border border-red-300",
+
+    selected:
+      "bg-white border-2 border-[#051030]",
   };
 
   return (
     <span className="flex items-center gap-2">
       <span
-        className={`h-4 w-4 rounded ${styles[styleType]}`}
+        className={`h-4 w-4 rounded-full ${styles[styleType]}`}
       />
+
       <span>{label}</span>
     </span>
   );
 }
 
-function getServiceTitle(service: ServiceType) {
+function getServiceTitle(
+  service: ServiceType,
+) {
   switch (service) {
     case "boarding":
-      return "In-Home Boarding";
+      return "Boarding";
+
     case "board-and-train":
       return "Board & Train";
   }

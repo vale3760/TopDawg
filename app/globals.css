@@ -32,9 +32,73 @@ a {
   text-decoration: none;
 }
 
-.calendar-wrapper .rdp-root {
-  --rdp-day-width: 64px !important;
-  --rdp-day-height: 64px !important;
-  --rdp-day_button-width: 62px !important;
-  --rdp-day_button-height: 62px !important;
+@import "tailwindcss";
+
+:root {
+  --background: #f8f4ec;
+  --foreground: #1c1917;
 }
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Mobile booking calendar */
+.calendar-wrapper .rdp-root {
+  width: 100%;
+  max-width: 100%;
+}
+
+.calendar-wrapper .rdp-months {
+  width: 100%;
+  max-width: 100%;
+}
+
+.calendar-wrapper .rdp-month {
+  width: 100%;
+}
+
+.calendar-wrapper .rdp-month_grid {
+  width: 100%;
+  table-layout: fixed;
+}
+
+.calendar-wrapper .rdp-weekday,
+.calendar-wrapper .rdp-day {
+  text-align: center;
+}
+
+@media (max-width: 640px) {
+  .calendar-wrapper .rdp-root {
+    --rdp-day-width: 38px;
+    --rdp-day-height: 38px;
+    --rdp-day_button-width: 38px;
+    --rdp-day_button-height: 38px;
+  }
+}
+
+
+

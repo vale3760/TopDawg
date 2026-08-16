@@ -25,7 +25,7 @@ const imageGroups = {
 
   three: [
     "/niko.jpeg",
-    "/KumaAndBoys.jpeg",
+    "/murphyAndCarmelo.JPEG",
     "/mooseOnTop.jpeg",
     "/moreAstraFar.jpeg",
   ],

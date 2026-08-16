@@ -11,31 +11,33 @@ export const metadata: Metadata = {
 export default function ServicesPage() {
   return (
     <>
-    <section className="relative min-h-[560px] overflow-hidden">
+    {/* HERO */}
+    <section className="relative min-h-[520px] overflow-hidden sm:min-h-[560px]">
       <Image
         src="/LunaMoose.jpeg"
         alt="Top Dawg Pet Care services"
         fill
         priority
         sizes="100vw"
-        className="object-cover object-center]"
+        className="object-cover object-[55%_center] md:object-center"
       />
 
-      {/* Slight overall darkening */}
-      <div className="absolute inset-0 bg-black/10" />
+      {/* Overall darkening */}
+      <div className="absolute inset-0 bg-black/25 md:bg-black/10" />
 
-      {/* Dark glow ONLY around center content */}
-      <div className="absolute inset-y-0 left-[30%] w-[45%] bg-gradient-to-r from-transparent via-black/45 to-transparent" />
+      {/* MOBILE: dark fade across image */}
+      <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/35 to-black/10 md:hidden" />
 
-      {/* Content */}
-      <div className="relative z-10 mx-auto flex min-h-[560px] max-w-7xl items-center px-6 md:px-8">
+      {/* DESKTOP: original center glow */}
+      <div className="absolute inset-y-0 left-[30%] hidden w-[45%] bg-gradient-to-r from-transparent via-black/45 to-transparent md:block" />
 
-        <div className="mx-auto w-full max-w-[600px]">
-          <p className="text-lg font-bold uppercase tracking-[0.25em] text-white">
+      <div className="relative z-10 mx-auto flex min-h-[520px] max-w-7xl items-center px-5 sm:min-h-[560px] sm:px-6 md:px-8">
+        <div className="w-full max-w-[600px] md:mx-auto">
+          <p className="text-sm font-bold uppercase tracking-[0.22em] text-white sm:text-base md:text-lg md:tracking-[0.25em]">
             Services
           </p>
 
-          <h1 className="mt-4 text-5xl font-black leading-[1.05] text-white md:text-6xl">
+          <h1 className="mt-4 text-4xl font-black leading-[1.08] text-white sm:text-5xl md:text-6xl md:leading-[1.05]">
             Personalized support
             <br />
             for real life with
@@ -43,123 +45,125 @@ export default function ServicesPage() {
             your dog.
           </h1>
 
-          <p className="mt-6 max-w-lg text-lg font-medium leading-8 text-white">
+          <p className="mt-5 max-w-lg text-base font-medium leading-7 text-white sm:text-lg sm:leading-8 md:mt-6">
             Choose from private training, boarding, or a more immersive
             board-and-train experience.
           </p>
 
-          <div className="mt-8 flex gap-4">
+          <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:gap-4 md:mt-8">
             <Link
               href="#training"
-              className="rounded-full bg-[#051030] px-7 py-3 font-semibold !text-white"
+              className="rounded-full bg-[#051030] px-7 py-3 text-center font-semibold !text-white"
             >
               Explore Training
             </Link>
 
             <Link
               href="#boarding"
-              className="rounded-full border border-white/70 bg-black/20 px-7 py-3 font-semibold !text-white backdrop-blur-sm"
+              className="rounded-full border border-white/70 bg-black/20 px-7 py-3 text-center font-semibold !text-white backdrop-blur-sm"
             >
               View Boarding
             </Link>
           </div>
         </div>
-
       </div>
     </section>
 
-      {/* Choose Your Service */}
-<section className="bg-[#faf8f3] px-6 py-20 md:py-24">
-  <div className="mx-auto max-w-7xl">
-    <div className="max-w-3xl">
-      <p className="text-lg font-bold uppercase tracking-[0.22em] text-[#4C6A58]">
-        Choose Your Service
-      </p>
+      {/* CHOOSE YOUR SERVICE */}
+      <section className="bg-[#faf8f3] px-5 py-14 sm:px-6 sm:py-16 md:py-24">
+        <div className="mx-auto max-w-7xl">
+          <div className="max-w-3xl">
+            <p className="text-sm font-bold uppercase tracking-[0.22em] text-[#4C6A58] sm:text-base md:text-lg">
+              Choose Your Service
+            </p>
 
-      <h2 className="mt-4 text-4xl font-black text-[#051030] md:text-5xl">
-        Find the right support for your dog.
-      </h2>
+            <h2 className="mt-4 text-3xl font-black leading-tight text-[#051030] sm:text-4xl md:text-5xl">
+              Find the right support for your dog.
+            </h2>
 
-      <p className="mt-5 text-lg leading-8 text-stone-700">
-        Whether you're looking for private training, a comfortable place
-        for your dog to stay, or a more immersive training experience,
-        there's an option designed around your dog's needs.
-      </p>
-    </div>
+            <p className="mt-5 text-base leading-7 text-stone-700 sm:text-lg sm:leading-8">
+              Whether you're looking for private training, a comfortable place
+              for your dog to stay, or a more immersive training experience,
+              there's an option designed around your dog's needs.
+            </p>
+          </div>
 
-    <div className="mt-12 grid gap-6 lg:grid-cols-3">
-      <ServiceCard
-        label="Training"
-        title="Build skills together."
-        price="Starts at $200"
-        description="Personalized training focused on communication, trust, and the behaviors you want to build."
-        href="#training"
-        gradient="from-white via-[#F4F7FB] to-[#DCE8F7]"
-      />
+          <div className="mt-10 grid gap-5 sm:mt-12 sm:gap-6 lg:grid-cols-3">
+            <ServiceCard
+              label="Training"
+              title="Build skills together."
+              price="Starts at $200"
+              description="Personalized training focused on communication, trust, and the behaviors you want to build."
+              href="#training"
+              gradient="from-white via-[#F4F7FB] to-[#DCE8F7]"
+            />
 
-      <ServiceCard
-        label="Boarding"
-        title="A home away from home."
-        price="$100 / night"
-        description="In-home boarding with personalized care, daily updates, walks, play, and plenty of downtime."
-        href="#boarding"
-        gradient="from-white via-[#F8F6F2] to-[#E8E1D8]"
-      />
+            <ServiceCard
+              label="Boarding"
+              title="A home away from home."
+              price="$100 / night"
+              description="In-home boarding with personalized care, daily updates, walks, play, and plenty of downtime."
+              href="#boarding"
+              gradient="from-white via-[#F8F6F2] to-[#E8E1D8]"
+            />
 
-      <ServiceCard
-        label="Board & Train"
-        title="Training built into everyday life."
-        price="$160 / night"
-        description="A one-on-one training stay where learning is incorporated naturally throughout your dog's day."
-        href="#board-and-train"
-        gradient="from-white via-[#F5F5F7] to-[#DDE2EA]"
-      />
-    </div>
-  </div>
-</section>
+            <ServiceCard
+              label="Board & Train"
+              title="Training built into everyday life."
+              price="$160 / night"
+              description="A one-on-one training stay where learning is incorporated naturally throughout your dog's day."
+              href="#board-and-train"
+              gradient="from-white via-[#F5F5F7] to-[#DDE2EA]"
+            />
+          </div>
+        </div>
+      </section>
 
-{/* Training */}
+{/* TRAINING */}
 <section
   id="training"
-  className="scroll-mt-28 bg-[#f8f4ec] px-6 py-24"
+  className="scroll-mt-24 bg-[#f8f4ec] px-5 py-14 sm:scroll-mt-28 sm:px-6 sm:py-20 md:py-24"
 >
   <div className="mx-auto max-w-7xl">
-    <p className="text-lg font-bold uppercase tracking-[0.18em] text-[#051030]">
+    <p className="text-sm font-bold uppercase tracking-[0.18em] text-[#051030] sm:text-base md:text-lg">
       Training
     </p>
 
-    <h2 className="mt-3 max-w-3xl text-4xl font-black text-stone-950 md:text-5xl">
+    <h2 className="mt-3 max-w-3xl text-3xl font-black leading-tight text-stone-950 sm:text-4xl md:text-5xl">
       Make training part of everyday life.
     </h2>
 
-    <p className="mt-6 max-w-3xl text-lg leading-8 text-stone-700">
+    <p className="mt-5 max-w-3xl text-base leading-7 text-stone-700 sm:mt-6 sm:text-lg sm:leading-8">
       I don't believe getting the behaviors we want from our dogs requires
       stricter training or more control. I focus on creating an environment
       where your dog feels safe, comfortable, and motivated to learn.
     </p>
 
     {/* Training overview */}
-    <div className="mt-14 grid gap-6 lg:grid-cols-2">
-      <div className="relative min-h-[440px] overflow-hidden rounded-3xl">
-        <HeroCarousel group="three"/>
+    <div className="mt-10 grid gap-6 sm:mt-14 lg:grid-cols-2">
 
-        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-8 pt-24 text-white">
-          <p className="text-2xl font-black">
+      {/* PHOTO */}
+      <div className="relative min-w-0 overflow-hidden rounded-2xl sm:rounded-3xl">
+        <HeroCarousel group="three" />
+
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-5 pt-20 text-white sm:p-8 sm:pt-24">
+          <p className="text-xl font-black sm:text-2xl">
             Personalized guidance for you and your dog.
           </p>
         </div>
       </div>
 
-      <article className="rounded-3xl bg-[#EFE8DD] p-8 md:p-10">
+      {/* APPROACH */}
+      <article className="rounded-2xl bg-[#EFE8DD] p-6 sm:rounded-3xl sm:p-8 md:p-10">
         <p className="text-sm font-bold uppercase tracking-[0.2em] text-[#4C6A58]">
           My Approach
         </p>
 
-        <h3 className="mt-4 text-3xl font-black text-stone-950">
+        <h3 className="mt-4 text-2xl font-black text-stone-950 sm:text-3xl">
           Training should work in real life.
         </h3>
 
-        <div className="mt-8 space-y-6">
+        <div className="mt-7 space-y-5 sm:mt-8 sm:space-y-6">
           <TrainingPrinciple
             title="Fun + Play"
             description="Training should be engaging and rewarding for both you and your dog."
@@ -319,60 +323,93 @@ export default function ServicesPage() {
 {/* Boarding */}
 <section
   id="boarding"
-  className="scroll-mt-28 bg-white px-6 py-24"
+  className="scroll-mt-24 bg-white px-5 py-14 sm:scroll-mt-28 sm:px-6 sm:py-20 md:py-24"
 >
   <div className="mx-auto max-w-7xl">
-    <div className="grid gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
+
+    {/* TOP BOARDING INTRO + PRICING */}
+    <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-start lg:gap-12">
+
+      {/* LEFT */}
       <div>
-        <p className="text-lg font-bold uppercase tracking-[0.18em] text-[#051030]">
+        <p className="text-sm font-bold uppercase tracking-[0.18em] text-[#051030] sm:text-base md:text-lg">
           Boarding
         </p>
 
-        <h2 className="mt-3 text-4xl font-black text-stone-950 md:text-5xl">
+        <h2 className="mt-3 text-3xl font-black leading-tight text-stone-950 sm:text-4xl md:text-5xl">
           A home away from home.
         </h2>
 
-        <p className="mt-6 max-w-2xl text-lg leading-8 text-stone-700">
+        <p className="mt-6 max-w-2xl text-base leading-7 text-stone-700 sm:text-lg sm:leading-8">
           When your dog stays with me, they'll receive the same care,
           attention, and patience I would give my own dog. My goal is to
           make their stay comfortable, enjoyable, and tailored to their
           individual needs.
         </p>
 
-        <p className="mt-5 max-w-2xl text-lg leading-8 text-stone-700">
+        <p className="mt-5 max-w-2xl text-base leading-7 text-stone-700 sm:text-lg sm:leading-8">
           Every dog is different, so I adjust their routine based on what
           they enjoy and what helps them feel most comfortable.
         </p>
+
+        {/* SMALL BOARDING PHOTO */}
+        <div className="relative mt-8 aspect-[16/9] w-full max-w-2xl overflow-hidden rounded-2xl sm:rounded-3xl">
+          <Image
+            src="/kumaAndBoys.jpeg"
+            alt="Dogs relaxing during their boarding stay at Top Dawg Pet Care"
+            fill
+            className="object-cover object-center"
+            sizes="(max-width: 1024px) 100vw, 55vw"
+          />
+
+          {/* subtle fade */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/15 via-transparent to-transparent" />
+        </div>
       </div>
 
-      <div className="rounded-3xl bg-[#051030] p-8 text-white md:p-10">
+      {/* RIGHT — PRICING */}
+      <div className="rounded-2xl bg-[#051030] p-6 text-white sm:rounded-3xl sm:p-8 md:p-10">
         <p className="text-sm font-bold uppercase tracking-[0.2em] text-[#C2DCFF]">
           Boarding Pricing
         </p>
 
         {/* Regular Rate */}
         <div className="mt-6 border-b border-white/20 pb-7">
-          <p className="text-white/60">First dog</p>
+          <p className="text-white/60">
+            First dog
+          </p>
 
-          <div className="mt-2 flex items-end gap-2">
-            <p className="text-5xl font-black">$100</p>
-            <p className="pb-1 text-white/60">per night</p>
+          <div className="mt-2 flex flex-wrap items-end gap-2">
+            <p className="text-4xl font-black sm:text-5xl">
+              $100
+            </p>
+
+            <p className="pb-1 text-white/60">
+              per night
+            </p>
           </div>
         </div>
 
         {/* Holiday Rate */}
         <div className="border-b border-white/20 py-7">
-          <div className="flex items-center gap-3">
-            <p className="text-white/60">Holiday rate</p>
+          <div className="flex flex-wrap items-center gap-3">
+            <p className="text-white/60">
+              Holiday rate
+            </p>
 
             <span className="rounded-full bg-[#C2DCFF] px-3 py-1 text-xs font-black uppercase tracking-[0.12em] text-[#051030]">
               Holidays
             </span>
           </div>
 
-          <div className="mt-2 flex items-end gap-2">
-            <p className="text-4xl font-black">$120</p>
-            <p className="pb-1 text-white/60">per night</p>
+          <div className="mt-2 flex flex-wrap items-end gap-2">
+            <p className="text-4xl font-black">
+              $120
+            </p>
+
+            <p className="pb-1 text-white/60">
+              per night
+            </p>
           </div>
         </div>
 
@@ -382,9 +419,14 @@ export default function ServicesPage() {
             Additional dog from the same household
           </p>
 
-          <div className="mt-2 flex items-end gap-2">
-            <p className="text-4xl font-black">$60</p>
-            <p className="pb-1 text-white/60">per night</p>
+          <div className="mt-2 flex flex-wrap items-end gap-2">
+            <p className="text-4xl font-black">
+              $60
+            </p>
+
+            <p className="pb-1 text-white/60">
+              per night
+            </p>
           </div>
 
           <p className="mt-2 text-sm text-white/50">
@@ -394,7 +436,7 @@ export default function ServicesPage() {
 
         <Link
           href="/availability"
-          className="mt-4 inline-block rounded-full bg-[#C2DCFF] px-7 py-3 font-semibold !text-black transition hover:bg-gray-100"
+          className="mt-4 inline-block w-full rounded-full bg-[#C2DCFF] px-7 py-3 text-center font-semibold !text-black transition hover:bg-gray-100 sm:w-auto"
         >
           Check Availability
         </Link>
@@ -402,33 +444,63 @@ export default function ServicesPage() {
     </div>
 
     {/* Typical day */}
-    <div className="mt-20">
+    <div className="mt-16 sm:mt-20">
       <p className="text-sm font-bold uppercase tracking-[0.22em] text-[#4C6A58]">
         During Their Stay
       </p>
 
-      <h3 className="mt-4 text-3xl font-black text-stone-950 md:text-4xl">
+      <h3 className="mt-4 text-2xl font-black text-stone-950 sm:text-3xl md:text-4xl">
         A day built around your dog.
       </h3>
 
-      <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <BoardingRoutine icon="🌅" title="Morning Walk" description="An early morning walk to start the day." />
-        <BoardingRoutine icon="🍽️" title="Breakfast" description="Their regular food and feeding routine." />
-        <BoardingRoutine icon="🐾" title="Lunchtime Walk" description="A midday break for movement and fresh air." />
-        <BoardingRoutine icon="🌳" title="Longer Walk" description="A longer afternoon or evening walk tailored to your dog." />
-        <BoardingRoutine icon="🍽️" title="Dinner" description="Dinner following the routine you provide." />
-        <BoardingRoutine icon="🧸" title="Play + Downtime" description="Play, attention, enrichment, and rest throughout the day." />
+      <div className="mt-8 grid gap-4 sm:mt-10 sm:grid-cols-2 lg:grid-cols-3">
+        <BoardingRoutine
+          icon="🌅"
+          title="Morning Walk"
+          description="An early morning walk to start the day."
+        />
+
+        <BoardingRoutine
+          icon="🍽️"
+          title="Breakfast"
+          description="Their regular food and feeding routine."
+        />
+
+        <BoardingRoutine
+          icon="🐾"
+          title="Lunchtime Walk"
+          description="A midday break for movement and fresh air."
+        />
+
+        <BoardingRoutine
+          icon="🌳"
+          title="Longer Walk"
+          description="A longer afternoon or evening walk tailored to your dog."
+        />
+
+        <BoardingRoutine
+          icon="🍽️"
+          title="Dinner"
+          description="Dinner following the routine you provide."
+        />
+
+        <BoardingRoutine
+          icon="🧸"
+          title="Play + Downtime"
+          description="Play, attention, enrichment, and rest throughout the day."
+        />
       </div>
     </div>
 
     {/* Care details */}
-    <div className="mt-16 grid gap-6 md:grid-cols-2">
-      <article className="rounded-3xl bg-[#f8f4ec] p-8 md:p-10">
+    <div className="mt-14 grid gap-6 sm:mt-16 md:grid-cols-2">
+
+      <article className="rounded-2xl bg-[#f8f4ec] p-6 sm:rounded-3xl sm:p-8 md:p-10">
         <p className="text-sm font-bold uppercase tracking-[0.2em] text-[#4C6A58]">
           Personalized Care
         </p>
 
-        <h3 className="mt-4 text-3xl font-black text-stone-950">
+        <h3 className="mt-4 text-2xl font-black text-stone-950 sm:text-3xl">
           Their stay should feel like their stay.
         </h3>
 
@@ -439,12 +511,12 @@ export default function ServicesPage() {
         </p>
       </article>
 
-      <article className="rounded-3xl bg-[#EFE8DD] p-8 md:p-10">
+      <article className="rounded-2xl bg-[#EFE8DD] p-6 sm:rounded-3xl sm:p-8 md:p-10">
         <p className="text-sm font-bold uppercase tracking-[0.2em] text-[#4C6A58]">
           Daily Updates
         </p>
 
-        <h3 className="mt-4 text-3xl font-black text-stone-950">
+        <h3 className="mt-4 text-2xl font-black text-stone-950 sm:text-3xl">
           You won't be left wondering how they're doing.
         </h3>
 
@@ -453,14 +525,14 @@ export default function ServicesPage() {
           dog is doing and get a glimpse into their day.
         </p>
 
-        <p className="mt-6 text-xl font-black text-[#4C6A58]">
+        <p className="mt-6 text-lg font-black text-[#4C6A58] sm:text-xl">
           I want your dog to feel like they're on their own little vacation.
         </p>
       </article>
     </div>
 
     {/* Requirements */}
-    <div className="mt-12 rounded-3xl border border-stone-200 p-8 md:p-10">
+    <div className="mt-10 rounded-2xl border border-stone-200 p-6 sm:mt-12 sm:rounded-3xl sm:p-8 md:p-10">
       <p className="text-sm font-bold uppercase tracking-[0.2em] text-[#4C6A58]">
         Boarding Requirements
       </p>
@@ -471,30 +543,45 @@ export default function ServicesPage() {
 
       <ul className="mt-6 space-y-4 text-stone-700">
         <li className="flex gap-3">
-          <span className="font-bold text-[#4C6A58]">✓</span>
-          Dogs must be house trained.
+          <span className="shrink-0 font-bold text-[#4C6A58]">
+            ✓
+          </span>
+
+          <span>
+            Dogs must be house trained.
+          </span>
         </li>
 
         <li className="flex gap-3">
-          <span className="font-bold text-[#4C6A58]">✓</span>
-          Dogs may spend approximately 4–5 hours home alone during the day,
-          depending on their needs.
+          <span className="shrink-0 font-bold text-[#4C6A58]">
+            ✓
+          </span>
+
+          <span>
+            Dogs may spend approximately 4–5 hours home alone during
+            the day, depending on their needs.
+          </span>
         </li>
 
         <li className="flex gap-3">
-          <span className="font-bold text-[#4C6A58]">✓</span>
-          Please provide enough regular food for the entire stay.
+          <span className="shrink-0 font-bold text-[#4C6A58]">
+            ✓
+          </span>
+
+          <span>
+            Please provide enough regular food for the entire stay.
+          </span>
         </li>
       </ul>
     </div>
 
     {/* Boarding process */}
-    <div className="mt-20">
+    <div className="mt-16 sm:mt-20">
       <p className="text-sm font-bold uppercase tracking-[0.22em] text-[#4C6A58]">
         How Boarding Works
       </p>
 
-      <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-8 grid gap-5 sm:mt-10 md:grid-cols-2 lg:grid-cols-4">
         <ProcessCard
           number="01"
           title="Initial Inquiry"
@@ -522,7 +609,7 @@ export default function ServicesPage() {
 
       <Link
         href="/availability"
-        className="mt-10 inline-block rounded-full bg-[#C2DCFF] px-8 py-4 font-semibold text-black transition hover:bg-[#051030]"
+        className="mt-8 inline-block w-full rounded-full bg-[#C2DCFF] px-8 py-4 text-center font-semibold !text-black transition hover:bg-[#051030] hover:!text-white sm:mt-10 sm:w-auto"
       >
         Book Boarding
       </Link>
@@ -530,49 +617,57 @@ export default function ServicesPage() {
   </div>
 </section>
 
-{/* Board & Train */}
+{/* BOARD & TRAIN */}
 <section
   id="board-and-train"
-  className="scroll-mt-28 bg-[#EFE8DD] px-6 py-24"
+  className="scroll-mt-24 bg-[#EFE8DD] px-5 py-14 sm:scroll-mt-28 sm:px-6 sm:py-20 md:py-24"
 >
   <div className="mx-auto max-w-7xl">
-    <div className="grid gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
+    <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-start lg:gap-12">
+
+      {/* LEFT */}
       <div>
-        <p className="text-lg font-bold uppercase tracking-[0.18em] text-[#051030]">
+        <p className="text-sm font-bold uppercase tracking-[0.18em] text-[#051030] sm:text-base md:text-lg">
           Board & Train
         </p>
 
-        <h2 className="mt-3 text-4xl font-black text-stone-950 md:text-5xl">
+        <h2 className="mt-3 text-3xl font-black leading-tight text-stone-950 sm:text-4xl md:text-5xl">
           Training built into everyday life.
         </h2>
 
-        <p className="mt-6 text-lg leading-8 text-stone-800">
+        <p className="mt-5 text-base leading-7 text-stone-800 sm:mt-6 sm:text-lg sm:leading-8">
           Board & Train combines personalized training with the comfort of
           staying in my home. While your dog is with me, I'll work with them
           throughout the day to begin building the behaviors and skills you
           want to see.
         </p>
 
-        <p className="mt-5 text-lg leading-8 text-stone-800">
+        <p className="mt-5 text-base leading-7 text-stone-800 sm:text-lg sm:leading-8">
           There is no minimum stay, although I recommend at least{" "}
           <strong>5 nights</strong> to give your dog time to settle in,
           build a routine, and make meaningful progress.
         </p>
       </div>
 
-      <div className="rounded-3xl bg-[#051030] p-8 text-white md:p-10">
+      {/* PRICING */}
+      <div className="rounded-2xl bg-[#051030] p-6 text-white sm:rounded-3xl sm:p-8 md:p-10">
         <p className="text-sm font-bold uppercase tracking-[0.2em] text-[#C2DCFF]">
           Board & Train
         </p>
 
-        <div className="mt-5 flex items-end gap-2">
-          <p className="text-5xl font-black">$160</p>
-          <p className="pb-1 text-white/60">per night</p>
+        <div className="mt-5 flex flex-wrap items-end gap-2">
+          <p className="text-4xl font-black sm:text-5xl">
+            $160
+          </p>
+
+          <p className="pb-1 text-white/60">
+            per night
+          </p>
         </div>
 
-        <ul className="mt-7 space-y-3 border-t border-white/20 pt-7 text-white/80">
+        <ul className="mt-7 space-y-3 border-t border-white/20 pt-7 text-sm leading-6 text-white/80 sm:text-base">
           <li>✓ Personalized daily training</li>
-          <li>✓ In-home boarding and enrichment</li>
+          <li>✓ Boarding and enrichment</li>
           <li>✓ Daily progress updates</li>
           <li>✓ Your dog is the only boarding dog</li>
           <li>✓ One follow-up training session</li>
@@ -581,91 +676,91 @@ export default function ServicesPage() {
 
         <Link
           href="/contact?service=board-and-train"
-          className="mt-8 inline-block rounded-full bg-[#4C6A58] px-7 py-3 font-semibold text-white"
+          className="mt-8 block w-full rounded-full bg-[#4C6A58] px-7 py-3 text-center font-semibold !text-white sm:inline-block sm:w-auto"
         >
           Inquire About Board & Train
         </Link>
       </div>
     </div>
 
-    <div className="mt-16 grid gap-6 md:grid-cols-2">
-      <article className="rounded-3xl bg-white p-8 md:p-10">
-        <p className="text-sm font-bold uppercase tracking-[0.2em] text-[#4C6A58]">
-          Real-Life Training
-        </p>
+    <div className="mt-12 grid gap-5 sm:mt-16 sm:gap-6 md:grid-cols-2">
+  <article className="rounded-2xl bg-white p-6 sm:rounded-3xl sm:p-8 md:p-10">
+    <p className="text-sm font-bold uppercase tracking-[0.2em] text-[#4C6A58]">
+      Real-Life Training
+    </p>
 
-        <h3 className="mt-4 text-3xl font-black text-stone-950">
-          Training doesn't stop when the lesson ends.
-        </h3>
+    <h3 className="mt-4 text-2xl font-black text-stone-950 sm:text-3xl">
+      Training doesn't stop when the lesson ends.
+    </h3>
 
-        <p className="mt-5 leading-7 text-stone-700">
-          There are opportunities throughout the day to practice and
-          reinforce behaviors naturally, helping your dog build skills in
-          everyday situations.
-        </p>
-      </article>
+    <p className="mt-5 leading-7 text-stone-700">
+      There are opportunities throughout the day to practice and
+      reinforce behaviors naturally, helping your dog build skills in
+      everyday situations.
+    </p>
+  </article>
 
-      <article className="rounded-3xl bg-[#4C6A58] p-8 text-white md:p-10">
-        <p className="text-sm font-bold uppercase tracking-[0.2em] text-white/70">
-          Personalized One-on-One Care
-        </p>
+  <article className="rounded-2xl bg-[#4C6A58] p-6 text-white sm:rounded-3xl sm:p-8 md:p-10">
+    <p className="text-sm font-bold uppercase tracking-[0.2em] text-white/70">
+      Personalized One-on-One Care
+    </p>
 
-        <h3 className="mt-4 text-3xl font-black">
-          Your dog gets my full attention.
-        </h3>
+    <h3 className="mt-4 text-2xl font-black sm:text-3xl">
+      Your dog gets my full attention.
+    </h3>
 
-        <p className="mt-5 leading-7 text-white/90">
-          During Board & Train, your dog will be the only dog boarding with
-          me so I can create a plan specifically around their needs.
-        </p>
-      </article>
-    </div>
+    <p className="mt-5 leading-7 text-white/90">
+      During Board & Train, your dog will be the only dog boarding with
+      me so I can create a plan specifically around their needs.
+    </p>
+  </article>
+</div>
 
-    <div className="mt-10 rounded-3xl bg-white p-8 md:p-10">
-      <p className="text-sm font-bold uppercase tracking-[0.2em] text-[#4C6A58]">
-        Follow-Up Session
-      </p>
+    <div className="mt-8 rounded-2xl bg-white p-6 sm:mt-10 sm:rounded-3xl sm:p-8 md:p-10">
+  <p className="text-sm font-bold uppercase tracking-[0.2em] text-[#4C6A58]">
+    Follow-Up Session
+  </p>
 
-      <h3 className="mt-4 text-3xl font-black text-stone-950">
-        The work continues when your dog comes home.
-      </h3>
+  <h3 className="mt-4 text-2xl font-black text-stone-950 sm:text-3xl">
+    The work continues when your dog comes home.
+  </h3>
 
-      <div className="mt-5 max-w-4xl space-y-5 leading-7 text-stone-700">
-        <p>
-          When the stay is complete, we'll have a session where I show you
-          the exercises and techniques we worked on and how to continue
-          practicing them at home.
-        </p>
+  <div className="mt-5 max-w-4xl space-y-5 text-base leading-7 text-stone-700">
+    <p>
+      When the stay is complete, we'll have a session where I show you
+      the exercises and techniques we worked on and how to continue
+      practicing them at home.
+    </p>
 
-        <p>
-          You'll also receive homework so you can keep building the behaviors
-          we worked on together.
-        </p>
+    <p>
+      You'll also receive homework so you can keep building the behaviors
+      we worked on together.
+    </p>
 
-        <p className="font-semibold text-stone-950">
-          The goal isn't for your dog to only behave differently while
-          they're with me. It's to give you the tools to continue that
-          progress together at home.
-        </p>
-      </div>
-    </div>
+    <p className="font-semibold text-stone-950">
+      The goal isn't for your dog to only behave differently while
+      they're with me. It's to give you the tools to continue that
+      progress together at home.
+    </p>
+  </div>
+</div>
   </div>
 </section>
 
-{/* Pricing At A Glance */}
-<section className="bg-[#faf8f3] px-6 py-20 md:py-24">
+{/* PRICING AT A GLANCE */}
+<section className="bg-[#faf8f3] px-5 py-14 sm:px-6 sm:py-20 md:py-24">
   <div className="mx-auto max-w-7xl">
     <div className="text-center">
       <p className="text-sm font-bold uppercase tracking-[0.22em] text-[#4C6A58]">
         Pricing At A Glance
       </p>
 
-      <h2 className="mt-4 text-4xl font-black text-[#051030] md:text-5xl">
+      <h2 className="mt-4 text-3xl font-black leading-tight text-[#051030] sm:text-4xl md:text-5xl">
         Simple pricing. Personalized care.
       </h2>
     </div>
 
-    <div className="mt-12 grid gap-6 lg:grid-cols-3">
+    <div className="mt-10 grid gap-5 sm:mt-12 sm:gap-6 lg:grid-cols-3">
       <SummaryCard
         title="Training"
         lines={[
@@ -734,7 +829,7 @@ function ServiceCard({
         flex flex-col rounded-3xl
         border border-[#051030]/10
         bg-gradient-to-br ${gradient}
-        p-8
+        p-6 sm:p-8
         shadow-sm
         transition-all duration-300
         hover:-translate-y-1
@@ -749,7 +844,7 @@ function ServiceCard({
         {title}
       </h3>
 
-      <p className="mt-4 text-3xl font-black text-[#051030]">
+      <p className="mt-4 text-2xl font-black text-[#051030] sm:text-3xl">
         {price}
       </p>
 
@@ -777,7 +872,7 @@ function ProcessCard({
   description: string;
 }) {
   return (
-    <div className="rounded-3xl border border-stone-200 bg-white p-6">
+    <div className="rounded-2xl border border-stone-200 bg-white p-5 sm:rounded-3xl sm:p-6">
       <span className="flex h-11 w-11 items-center justify-center rounded-full bg-[#051030] text-sm font-bold text-white">
         {number}
       </span>
@@ -808,7 +903,7 @@ function PricingCard({
 }) {
   return (
     <div
-      className={`rounded-3xl p-7 ${
+      className={`rounded-2xl p-6 sm:rounded-3xl sm:p-7 ${
         featured
           ? "border-2 border-[#4C6A58] bg-[#F3F6F1]"
           : "border border-stone-200 bg-white"
@@ -818,7 +913,7 @@ function PricingCard({
         {label}
       </p>
 
-      <p className="mt-4 text-4xl font-black text-stone-950">
+      <p className="mt-4 text-3xl font-black text-stone-950 sm:text-4xl">
         {price}
       </p>
 
@@ -845,7 +940,7 @@ function SummaryCard({
   button: string;
 }) {
   return (
-    <div className="flex flex-col rounded-3xl border border-stone-200 bg-white p-8">
+    <div className="flex flex-col rounded-2xl border border-stone-200 bg-white p-6 sm:rounded-3xl sm:p-8">
       <h3 className="text-2xl font-black text-[#051030]">
         {title}
       </h3>

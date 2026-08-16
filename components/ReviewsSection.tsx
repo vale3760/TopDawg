@@ -18,31 +18,46 @@ const reviews = [
 
 export default function ReviewsSection() {
   return (
-    <section className="border-t border-stone-200 bg-white px-6 py-24">
-      <div className="mx-auto max-w-6xl">
-
-        <div className="mt-14 grid gap-8 md:grid-cols-3">
-          {reviews.map((review) => (
-            <ReviewCard
-              key={review.author}
-              author={review.author}
-              review={review.review}
-            />
-          ))}
-        </div>
-
-        <div className="mt-12 text-center">
-         <a
-            href="https://www.rover.com/members/jose-t-expert-care-for-your-fave-companion/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center justify-center rounded-full bg-[#14A800] px-8 py-4 font-semibold !text-white transition-colors duration-200 hover:bg-[#108C00]"
-            >
-            See All Reviews on Rover
-            </a>
-        </div>
+    <div className="w-full">
+      {/* REVIEWS */}
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-3 lg:gap-6">
+        {reviews.map((review) => (
+          <ReviewCard
+            key={review.author}
+            author={review.author}
+            review={review.review}
+          />
+        ))}
       </div>
-    </section>
+
+      {/* ROVER BUTTON */}
+      <div className="mt-8 text-center lg:mt-12">
+        <a
+          href="https://www.rover.com/members/jose-t-expert-care-for-your-fave-companion/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="
+            inline-flex
+            items-center
+            justify-center
+            rounded-full
+            bg-[#14A800]
+            px-7
+            py-3
+            text-sm
+            font-semibold
+            !text-white
+            transition-colors
+            duration-200
+            hover:bg-[#108C00]
+            lg:px-8
+            lg:text-base
+          "
+        >
+          See All Reviews on Rover
+        </a>
+      </div>
+    </div>
   );
 }
 
@@ -51,18 +66,47 @@ type ReviewCardProps = {
   review: string;
 };
 
-function ReviewCard({ author, review }: ReviewCardProps) {
+function ReviewCard({
+  author,
+  review,
+}: ReviewCardProps) {
   return (
-    <div className="rounded-3xl border border-stone-200 bg-[#f8f4ec] p-8 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg">
-      <div className="text-xl text-amber-500">★★★★★</div>
+    <article
+      className="
+        flex
+        h-full
+        flex-col
+        rounded-2xl
+        border
+        border-stone-200
+        bg-[#f8f4ec]
+        p-6
+        shadow-sm
+        transition
+        duration-300
+        lg:rounded-3xl
+        lg:p-8
+        lg:hover:-translate-y-1
+        lg:hover:shadow-lg
+      "
+    >
+      {/* STARS */}
+      <div
+        className="text-lg tracking-[0.08em] text-amber-500 lg:text-xl"
+        aria-label="5 out of 5 stars"
+      >
+        ★★★★★
+      </div>
 
-      <p className="mt-5 leading-7 text-stone-700">
-        "{review}"
+      {/* REVIEW */}
+      <p className="mt-4 flex-1 text-base leading-7 text-stone-700 lg:mt-5 lg:text-lg lg:leading-8">
+        &ldquo;{review}&rdquo;
       </p>
 
-      <p className="mt-6 font-semibold text-stone-900">
+      {/* AUTHOR */}
+      <p className="mt-5 font-semibold text-stone-900 lg:mt-6">
         — {author}
       </p>
-    </div>
+    </article>
   );
 }

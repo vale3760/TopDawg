@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-
 import { oauth2Client } from "@/lib/google/oauth";
 
 export async function GET(request: NextRequest) {
@@ -35,13 +34,16 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(
         {
           error:
-            "Google did not return a refresh token. Reconnect Google Calendar and approve access again.",
+            "Google did not return a refresh token. Revoke the app's access from your Google Account and reconnect.",
         },
         {
           status: 400,
         },
       );
     }
+
+    // TEMPORARY — copy this value into .env.local
+    console.log("GOOGLE REFRESH TOKEN:", tokens.refresh_token);
 
     return NextResponse.redirect(
       new URL("/?googleCalendar=connected", request.url),

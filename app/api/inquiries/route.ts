@@ -3,6 +3,14 @@ import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+const validServices = [
+  "boarding",
+  "board-and-train",
+  "assessment",
+] as const;
+
+type ServiceType = (typeof validServices)[number];
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -37,7 +45,7 @@ export async function POST(request: NextRequest) {
     } = body;
 
     /* --------------------------------
-       VALIDATION
+       BASIC VALIDATION
     -------------------------------- */
 
     if (
@@ -57,6 +65,25 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (
+      !validServices.includes(
+        service as ServiceType,
+      )
+    ) {
+      return NextResponse.json(
+        {
+          error: "Please select a valid service.",
+        },
+        {
+          status: 400,
+        },
+      );
+    }
+
+    /* --------------------------------
+       SERVICE TYPE
+    -------------------------------- */
+
     const needsBoarding =
       service === "boarding" ||
       service === "board-and-train";
@@ -65,8 +92,14 @@ export async function POST(request: NextRequest) {
       service === "assessment" ||
       service === "board-and-train";
 
-    // Boarding and Board & Train must have dates
-    if (needsBoarding && (!startDate || !endDate)) {
+    /* --------------------------------
+       SERVICE-SPECIFIC VALIDATION
+    -------------------------------- */
+
+    if (
+      needsBoarding &&
+      (!startDate || !endDate)
+    ) {
       return NextResponse.json(
         {
           error:
@@ -78,18 +111,58 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (
+      needsBoarding &&
+      (!houseTrained || !aroundDogs)
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "Please complete the boarding questions.",
+        },
+        {
+          status: 400,
+        },
+      );
+    }
+
+    if (
+      needsTraining &&
+      (
+        !behaviorConcerns ||
+        !goals ||
+        !challengingSituations
+      )
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "Please complete the training questions.",
+        },
+        {
+          status: 400,
+        },
+      );
+    }
+
     /* --------------------------------
-       SERVICE NAME
+       SERVICE LABEL
     -------------------------------- */
 
+    const serviceLabels: Record<ServiceType, string> = {
+      boarding: "In-Home Boarding",
+
+      "board-and-train":
+        "Board & Train",
+
+      assessment:
+        "Initial Assessment + First Lesson",
+    };
+
     const serviceLabel =
-      service === "boarding"
-        ? "In-Home Boarding"
-        : service === "board-and-train"
-          ? "Board & Train"
-          : service === "assessment"
-            ? "Initial Assessment + First Lesson"
-            : service;
+      serviceLabels[
+        service as ServiceType
+      ];
 
     /* --------------------------------
        EMAIL HTML
@@ -106,7 +179,12 @@ export async function POST(request: NextRequest) {
         "
       >
 
-        <h1 style="color:#355C4B; margin-bottom:8px;">
+        <h1
+          style="
+            color:#355C4B;
+            margin-bottom:8px;
+          "
+        >
           New Top Dawg Pet Care Inquiry
         </h1>
 
@@ -126,7 +204,9 @@ export async function POST(request: NextRequest) {
                   margin:20px 0;
                 "
               >
-                <strong>Requested Stay</strong>
+                <strong>
+                  Requested Stay
+                </strong>
 
                 <p style="margin:8px 0 0;">
                   ${escapeHtml(
@@ -166,7 +246,9 @@ export async function POST(request: NextRequest) {
 
         <p>
           <strong>Phone:</strong>
-          ${escapeHtml(phone || "Not provided")}
+          ${escapeHtml(
+            phone || "Not provided",
+          )}
         </p>
 
         <hr
@@ -190,12 +272,16 @@ export async function POST(request: NextRequest) {
 
         <p>
           <strong>Breed / Mix:</strong>
-          ${escapeHtml(breed || "Not provided")}
+          ${escapeHtml(
+            breed || "Not provided",
+          )}
         </p>
 
         <p>
           <strong>Age:</strong>
-          ${escapeHtml(dogAge || "Not provided")}
+          ${escapeHtml(
+            dogAge || "Not provided",
+          )}
         </p>
 
         ${emailSection(
@@ -285,28 +371,55 @@ export async function POST(request: NextRequest) {
     `;
 
     /* --------------------------------
-       SEND WITH RESEND
+       ENVIRONMENT CHECK
     -------------------------------- */
 
-    const { data, error } = await resend.emails.send({
-      from: `Top Dawg Pet Care <${process.env.RESEND_FROM_EMAIL}>`,
+    const fromEmail =
+      process.env.RESEND_FROM_EMAIL;
 
-      to: [process.env.BOOKING_EMAIL!],
+    const bookingEmail =
+      process.env.BOOKING_EMAIL;
 
-      // Replying to the email goes directly to the customer
-      replyTo: email,
+    if (!fromEmail) {
+      throw new Error(
+        "Missing RESEND_FROM_EMAIL",
+      );
+    }
 
-      subject: `New ${serviceLabel} request — ${firstName} ${lastName}`,
+    if (!bookingEmail) {
+      throw new Error(
+        "Missing BOOKING_EMAIL",
+      );
+    }
 
-      html,
-    });
+    /* --------------------------------
+       SEND EMAIL
+    -------------------------------- */
+
+    const { data, error } =
+      await resend.emails.send({
+        from:
+          `Top Dawg Pet Care <${fromEmail}>`,
+
+        to: [bookingEmail],
+
+        replyTo: email,
+
+        subject:
+          `New ${serviceLabel} request — ${firstName} ${lastName}`,
+
+        html,
+      });
 
     /* --------------------------------
        RESEND ERROR
     -------------------------------- */
 
     if (error) {
-      console.error("RESEND ERROR:", error);
+      console.error(
+        "RESEND ERROR:",
+        error,
+      );
 
       return NextResponse.json(
         {
@@ -314,7 +427,8 @@ export async function POST(request: NextRequest) {
             "The form was received, but the email could not be sent.",
 
           details:
-            process.env.NODE_ENV === "development"
+            process.env.NODE_ENV ===
+            "development"
               ? error.message
               : undefined,
         },
@@ -324,21 +438,29 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log("EMAIL SENT:", data?.id);
+    console.log(
+      "EMAIL SENT:",
+      data?.id,
+    );
 
     return NextResponse.json({
       success: true,
       emailId: data?.id,
     });
   } catch (error) {
-    console.error("INQUIRY ERROR:", error);
+    console.error(
+      "INQUIRY ERROR:",
+      error,
+    );
 
     return NextResponse.json(
       {
-        error: "The inquiry could not be submitted.",
+        error:
+          "The inquiry could not be submitted.",
 
         details:
-          process.env.NODE_ENV === "development" &&
+          process.env.NODE_ENV ===
+            "development" &&
           error instanceof Error
             ? error.message
             : undefined,
@@ -370,8 +492,16 @@ function emailSection(
         </strong>
       </p>
 
-      <p style="margin-top:0; line-height:1.6;">
-        ${escapeHtml(value).replace(/\n/g, "<br />")}
+      <p
+        style="
+          margin-top:0;
+          line-height:1.6;
+        "
+      >
+        ${escapeHtml(value).replace(
+          /\n/g,
+          "<br />",
+        )}
       </p>
     </div>
   `;
@@ -381,7 +511,9 @@ function emailSection(
    ESCAPE USER INPUT
 -------------------------------- */
 
-function escapeHtml(value: string) {
+function escapeHtml(
+  value: string,
+) {
   return String(value)
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")

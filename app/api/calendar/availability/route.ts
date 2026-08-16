@@ -11,6 +11,8 @@ type AvailabilityBooking = {
   numberOfDogs: number;
 };
 
+const BOARDING_CAPACITY = 2;
+
 export async function GET() {
   try {
     const calendar = await getGoogleCalendar();
@@ -38,13 +40,33 @@ export async function GET() {
     const bookings: AvailabilityBooking[] =
       response.data.items
         ?.filter((event) => event.start?.date && event.end?.date)
-        .map((event) => ({
+        .map((event) => {
+          const name =
+            event.summary?.trim() || "Unnamed booking";
+
+          const normalizedName = name.toLowerCase();
+
+          const isAvailable =
+            normalizedName === "available";
+
+          const isUnavailable =
+            normalizedName === "unavailable";
+
+          return {
             id: event.id,
-            name: event.summary ?? "Unnamed booking",
+            name,
             startDate: event.start!.date!,
             endDate: event.end!.date!,
-            numberOfDogs: parseDogCount(event.description),
-            })) ?? [];
+
+            // Available does not use capacity
+            // Unavailable blocks all capacity
+            numberOfDogs: isAvailable
+              ? 0
+              : isUnavailable
+                ? BOARDING_CAPACITY
+                : parseDogCount(event.description),
+          };
+        }) ?? [];
 
     return NextResponse.json({
       bookings,
@@ -75,7 +97,9 @@ function parseDogCount(
     return 1;
   }
 
-  const match = description.match(/dogs?\s*:\s*(\d+)/i);
+  const match = description.match(
+    /dogs?\s*:\s*(\d+)/i,
+  );
 
   if (!match) {
     return 1;
