@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
+
 import HeroCarousel from "@/components/HeroCarousel";
 
 export const metadata: Metadata = {
@@ -105,7 +106,7 @@ export default function ServicesPage() {
                 <div>
                   <p>$100 / night</p>
 
-                  <p className="mt-2 text-base font-black text-red-600">
+                  <p className="mt-1 text-sm font-black text-red-600">
                     Holiday: $120 / night
                   </p>
 
@@ -857,9 +858,9 @@ function ServiceCard({
         {title}
       </h3>
 
-      <p className="mt-4 text-2xl font-black text-[#051030] sm:text-3xl">
+      <div className="mt-4 text-2xl font-black text-[#051030] sm:text-3xl">
         {price}
-      </p>
+      </div>
 
       <p className="mt-5 flex-1 leading-7 text-stone-600">
         {description}
