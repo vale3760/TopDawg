@@ -324,23 +324,28 @@ export default function BookingCalendar() {
                 Step 1
               </p>
 
-              <h2 className="mt-2 text-3xl font-black text-stone-950">
+              <h2 className="mt-2 text-2xl font-black text-stone-950 sm:text-3xl">
                 Choose a service
               </h2>
 
               <div className="mt-6 grid max-w-xl gap-3 sm:grid-cols-2">
                 <ServiceButton
                   title="Boarding"
-                  description="$100 per night"
-                  selected={
-                    service ===
-                    "boarding"
+                  description={
+                    <>
+                      <span className="block">$100 per night</span>
+
+                      <span className="mt-1 block text-xs opacity-80">
+                        Holiday: $120 per night
+                      </span>
+
+                      <span className="block text-sm">
+                        +1 dog: $60 per night
+                      </span>
+                    </>
                   }
-                  onClick={() =>
-                    changeService(
-                      "boarding",
-                    )
-                  }
+                  selected={service === "boarding"}
+                  onClick={() => changeService("boarding")}
                 />
 
                 <ServiceButton
@@ -382,7 +387,7 @@ export default function BookingCalendar() {
                 </div>
               )}
 
-              <div className="calendar-wrapper mt-6 overflow-x-auto rounded-2xl border border-stone-200 bg-white p-4 sm:p-8">
+              <div className="calendar-wrapper mt-6 w-full overflow-hidden rounded-2xl border border-stone-200 bg-white p-2 sm:p-4 md:p-8">
                 {mounted ? (
                   <DayPicker
                     mode="range"
@@ -564,7 +569,7 @@ export default function BookingCalendar() {
 
 type ServiceButtonProps = {
   title: string;
-  description: string;
+  description: React.ReactNode;
   selected: boolean;
   onClick: () => void;
 };
@@ -592,14 +597,14 @@ function ServiceButton({
       </span>
 
       <span
-        className={`mt-2 block text-sm ${
-          selected
-            ? "text-stone-300"
-            : "text-stone-500"
-        }`}
-      >
-        {description}
-      </span>
+      className={`mt-2 block ${
+        selected
+          ? "text-stone-300"
+          : "text-stone-500"
+      }`}
+    >
+      {description}
+    </span>
     </button>
   );
 }

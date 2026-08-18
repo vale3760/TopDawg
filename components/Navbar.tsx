@@ -53,10 +53,11 @@ export default function Navbar() {
           }
         `}
       >
+        
         {/* LOGO */}
         <Link
           href="/"
-          className="flex items-center"
+          className="flex shrink-0 items-center"
           onClick={() => setMenuOpen(false)}
         >
           <Image
@@ -71,12 +72,12 @@ export default function Navbar() {
 
               ${
                 scrolled
-                  ? "h-[58px] w-[100px] md:h-[65px] md:w-[110px]"
-                  : "h-[72px] w-[120px] md:h-[105px] md:w-[170px]"
+                  ? "h-[78px] w-[140px] md:h-[88px] md:w-[160px]"
+                  : "h-[100px] w-[175px] md:h-[135px] md:w-[225px]"
               }
             `}
           />
-        </Link>
+        </Link>         
 
         {/* DESKTOP NAVIGATION */}
         <nav className="hidden items-center gap-9 lg:flex">

@@ -101,7 +101,19 @@ export default function ServicesPage() {
             <ServiceCard
               label="Boarding"
               title="A home away from home."
-              price="$100 / night"
+              price={
+                <div>
+                  <p>$100 / night</p>
+
+                  <p className="mt-2 text-base font-black text-red-600">
+                    Holiday: $120 / night
+                  </p>
+
+                  <p className="mt-1 text-sm font-semibold text-stone-600">
+                    Additional dog: $60 / night
+                  </p>
+                </div>
+              }
               description="In-home boarding with personalized care, daily updates, walks, play, and plenty of downtime."
               href="#boarding"
               gradient="from-white via-[#F8F6F2] to-[#E8E1D8]"
@@ -773,10 +785,11 @@ export default function ServicesPage() {
         button="Training Inquiry"
       />
 
-      <SummaryCard
+     <SummaryCard
         title="Boarding"
         lines={[
           "$100 per night",
+          "Holiday rate — $120 per night",
           "Additional dog — $60 per night",
         ]}
         href="/availability"
@@ -818,7 +831,7 @@ function ServiceCard({
 }: {
   label: string;
   title: string;
-  price: string;
+  price: React.ReactNode;
   description: string;
   href: string;
   gradient: string;
