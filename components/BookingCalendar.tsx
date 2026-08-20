@@ -12,8 +12,6 @@ import {
   format,
 } from "date-fns";
 
-import "react-day-picker/style.css";
-
 type ServiceType =
   | "boarding"
   | "board-and-train";
