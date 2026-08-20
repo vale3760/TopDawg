@@ -339,8 +339,8 @@ export default function BookingCalendar() {
                         Holiday: $120 per night
                       </span>
 
-                      <span className="block text-sm">
-                        +1 dog: $60 per night
+                      <span className="mt-1 block text-xs opacity-80">
+                        Additional dog: $60 per night
                       </span>
                     </>
                   }

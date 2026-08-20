@@ -106,7 +106,7 @@ export default function ServicesPage() {
                 <div>
                   <p>$100 / night</p>
 
-                  <p className="mt-1 text-sm font-black text-red-600">
+                  <p className="mt-1 text-sm font-semibold text-stone-600">
                     Holiday: $120 / night
                   </p>
 
@@ -787,15 +787,25 @@ export default function ServicesPage() {
       />
 
      <SummaryCard
-        title="Boarding"
-        lines={[
-          "$100 per night",
-          "Holiday rate — $120 per night",
-          "Additional dog — $60 per night",
-        ]}
-        href="/availability"
-        button="Check Availability"
-      />
+      title="Boarding"
+      lines={[
+        <span key="regular">
+          $100 per night
+        </span>,
+
+        <span
+          key="holiday"
+        >
+          Holiday rate — $120 per night
+        </span>,
+
+        <span key="additional">
+          Additional dog — $60 per night
+        </span>,
+      ]}
+      href="/availability"
+      button="Check Availability"
+    />
 
       <SummaryCard
         title="Board & Train"
@@ -949,7 +959,7 @@ function SummaryCard({
   button,
 }: {
   title: string;
-  lines: string[];
+  lines: React.ReactNode[];
   href: string;
   button: string;
 }) {
@@ -960,8 +970,10 @@ function SummaryCard({
       </h3>
 
       <div className="mt-6 flex-1 space-y-3 text-stone-700">
-        {lines.map((line) => (
-          <p key={line}>{line}</p>
+        {lines.map((line, index) => (
+          <div key={index}>
+            {line}
+          </div>
         ))}
       </div>
 

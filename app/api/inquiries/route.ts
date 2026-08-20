@@ -22,11 +22,20 @@ export async function POST(request: NextRequest) {
       email,
       phone,
 
-      // DOG
+      // NUMBER OF DOGS
+      numberOfDogs,
+
+      // DOG 1
       dogName,
       breed,
       dogAge,
       dogPersonality,
+
+      // DOG 2
+      secondDogName,
+      secondDogBreed,
+      secondDogAge,
+      secondDogPersonality,
 
       // SERVICE / DATES
       service,
@@ -91,6 +100,28 @@ export async function POST(request: NextRequest) {
     const needsTraining =
       service === "assessment" ||
       service === "board-and-train";
+
+    /* --------------------------------
+       DOG VALIDATION
+    -------------------------------- */
+
+    const dogCount =
+      numberOfDogs === "2" ? "2" : "1";
+
+    if (
+      dogCount === "2" &&
+      !secondDogName
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "Please provide the second dog's name.",
+        },
+        {
+          status: 400,
+        },
+      );
+    }
 
     /* --------------------------------
        SERVICE-SPECIFIC VALIDATION
@@ -193,6 +224,11 @@ export async function POST(request: NextRequest) {
           ${escapeHtml(serviceLabel)}
         </p>
 
+        <p style="font-size:18px;">
+          <strong>Number of dogs:</strong>
+          ${escapeHtml(dogCount)}
+        </p>
+
         ${
           needsBoarding
             ? `
@@ -259,10 +295,10 @@ export async function POST(request: NextRequest) {
           "
         />
 
-        <!-- DOG -->
+        <!-- DOG 1 -->
 
         <h2 style="color:#051030;">
-          About the Dog
+          ${dogCount === "2" ? "Dog 1" : "About the Dog"}
         </h2>
 
         <p>
@@ -290,6 +326,50 @@ export async function POST(request: NextRequest) {
         )}
 
         ${
+          dogCount === "2"
+            ? `
+              <hr
+                style="
+                  border:none;
+                  border-top:1px solid #e7e5e4;
+                  margin:25px 0;
+                "
+              />
+
+              <h2 style="color:#051030;">
+                Dog 2
+              </h2>
+
+              <p>
+                <strong>Name:</strong>
+                ${escapeHtml(
+                  secondDogName || "Not provided",
+                )}
+              </p>
+
+              <p>
+                <strong>Breed / Mix:</strong>
+                ${escapeHtml(
+                  secondDogBreed || "Not provided",
+                )}
+              </p>
+
+              <p>
+                <strong>Age:</strong>
+                ${escapeHtml(
+                  secondDogAge || "Not provided",
+                )}
+              </p>
+
+              ${emailSection(
+                "Personality / Background",
+                secondDogPersonality,
+              )}
+            `
+            : ""
+        }
+
+        ${
           needsBoarding
             ? `
               <hr
@@ -305,12 +385,16 @@ export async function POST(request: NextRequest) {
               </h2>
 
               ${emailSection(
-                "House trained?",
+                dogCount === "2"
+                  ? "Are both dogs house trained?"
+                  : "House trained?",
                 houseTrained,
               )}
 
               ${emailSection(
-                "How does the dog do around other dogs?",
+                dogCount === "2"
+                  ? "How do the dogs do around other dogs?"
+                  : "How does the dog do around other dogs?",
                 aroundDogs,
               )}
             `

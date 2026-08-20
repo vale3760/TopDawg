@@ -24,6 +24,8 @@ export default function ContactForm({
 
   const [message, setMessage] = useState("");
 
+  const [numberOfDogs, setNumberOfDogs] = useState("1");
+
   const isBoarding = initialService === "boarding";
   const isBoardAndTrain = initialService === "board-and-train";
   const isAssessment = initialService === "assessment";
@@ -34,8 +36,11 @@ export default function ContactForm({
   const needsTrainingQuestions =
     isAssessment || isBoardAndTrain;
 
+  const allowsMultipleDogs =
+    isBoarding;
+
   async function handleSubmit(
-    event: React.FormEvent<HTMLFormElement>
+    event: React.FormEvent<HTMLFormElement>,
   ) {
     event.preventDefault();
 
@@ -83,7 +88,11 @@ export default function ContactForm({
       phone:
         formData.get("phone")?.toString() ?? "",
 
-      // DOG
+      // NUMBER OF DOGS
+      numberOfDogs:
+        formData.get("numberOfDogs")?.toString() ?? "1",
+
+      // DOG 1
       dogName:
         formData.get("dogName")?.toString() ?? "",
 
@@ -95,6 +104,19 @@ export default function ContactForm({
 
       dogPersonality:
         formData.get("dogPersonality")?.toString() ?? "",
+
+      // DOG 2
+      secondDogName:
+        formData.get("secondDogName")?.toString() ?? "",
+
+      secondDogBreed:
+        formData.get("secondDogBreed")?.toString() ?? "",
+
+      secondDogAge:
+        formData.get("secondDogAge")?.toString() ?? "",
+
+      secondDogPersonality:
+        formData.get("secondDogPersonality")?.toString() ?? "",
 
       // BOOKING
       service,
@@ -141,14 +163,14 @@ export default function ContactForm({
       if (!response.ok) {
         throw new Error(
           result.error ||
-            "The request could not be sent."
+            "The request could not be sent.",
         );
       }
 
       setStatus("success");
 
       setMessage(
-        "Your inquiry was sent successfully."
+        "Your inquiry was sent successfully.",
       );
     } catch (error) {
       setStatus("error");
@@ -156,7 +178,7 @@ export default function ContactForm({
       setMessage(
         error instanceof Error
           ? error.message
-          : "Something went wrong while sending the form."
+          : "Something went wrong while sending the form.",
       );
     }
   }
@@ -234,34 +256,118 @@ export default function ContactForm({
 
       {/* DOG INFORMATION */}
       <FormSection
-        eyebrow="Your Dog"
-        title="About Your Dog"
+        eyebrow={allowsMultipleDogs ? "Your Dog(s)" : "Your Dog"}
+        title={allowsMultipleDogs ? "About Your Dog(s)" : "About Your Dog"}
       >
-        <div className="grid gap-6 md:grid-cols-3">
-          <FormField
-            label="Name"
-            name="dogName"
-            required
-          />
+        {/* NUMBER OF DOGS */}
+        {allowsMultipleDogs && (
+          <label className="flex max-w-xs flex-col gap-2">
+            <span className="font-bold text-stone-800">
+              How many dogs?
+            </span>
 
-          <FormField
-            label="Breed / Mix"
-            name="breed"
-          />
+            <select
+              name="numberOfDogs"
+              value={numberOfDogs}
+              onChange={(event) =>
+                setNumberOfDogs(event.target.value)
+              }
+              className="rounded-xl border border-stone-300 bg-white px-4 py-3 outline-none transition focus:border-[#4C6A58] focus:ring-2 focus:ring-[#4C6A58]/10"
+            >
+              <option value="1">1 dog</option>
+              <option value="2">2 dogs</option>
+            </select>
+          </label>
+        )}
 
-          <FormField
-            label="Age"
-            name="dogAge"
+        {/* If training only, still submit 1 */}
+        {!allowsMultipleDogs && (
+          <input
+            type="hidden"
+            name="numberOfDogs"
+            value="1"
           />
+        )}
+
+        {/* DOG 1 */}
+        <div>
+          {numberOfDogs === "2" && allowsMultipleDogs && (
+            <h3 className="mb-5 text-lg font-black text-stone-900">
+              Dog 1
+            </h3>
+          )}
+
+          <div className="grid gap-6 md:grid-cols-3">
+            <FormField
+              label="Name"
+              name="dogName"
+              required
+            />
+
+            <FormField
+              label="Breed / Mix"
+              name="breed"
+            />
+
+            <FormField
+              label="Age"
+              name="dogAge"
+            />
+          </div>
+
+          <div className="mt-6">
+            <TextAreaField
+              label="Tell me a little about your dog."
+              name="dogPersonality"
+              rows={4}
+              required
+              placeholder="Their personality and anything you think would be helpful for me to know."
+            />
+          </div>
         </div>
 
-        <TextAreaField
-          label="Tell me a little about your dog."
-          name="dogPersonality"
-          rows={4}
-          required
-          placeholder="Their personality and anything you think would be helpful for me to know."
-        />
+        {/* DOG 2 */}
+        {numberOfDogs === "2" && allowsMultipleDogs && (
+          <div className="mt-10 border-t border-stone-200 pt-8">
+            <div className="mb-5">
+              <h3 className="text-lg font-black text-stone-900">
+                Dog 2
+              </h3>
+
+              <p className="mt-1 text-sm text-stone-500">
+                Tell me a little about your second dog.
+              </p>
+            </div>
+
+            <div className="grid gap-6 md:grid-cols-3">
+              <FormField
+                label="Name"
+                name="secondDogName"
+                required
+              />
+
+              <FormField
+                label="Breed / Mix"
+                name="secondDogBreed"
+              />
+
+              <FormField
+                label="Age"
+                name="secondDogAge"
+              />
+            </div>
+
+            <div className="mt-6">
+              <TextAreaField
+                label="Tell me a little about your second dog."
+                name="secondDogPersonality"
+                rows={4}
+                required
+                placeholder="Their personality and anything you think would be helpful for me to know."
+              />
+            </div>
+          </div>
+        )}
       </FormSection>
 
       {/* BOARDING QUESTIONS */}
@@ -271,7 +377,11 @@ export default function ContactForm({
           title="Boarding Information"
         >
           <SelectField
-            label="Is your dog house trained?"
+            label={
+              numberOfDogs === "2"
+                ? "Are both dogs house trained?"
+                : "Is your dog house trained?"
+            }
             name="houseTrained"
             required
             options={[
@@ -291,7 +401,11 @@ export default function ContactForm({
           />
 
           <TextAreaField
-            label="How does your dog do around other dogs?"
+            label={
+              numberOfDogs === "2"
+                ? "How do your dogs do around other dogs?"
+                : "How does your dog do around other dogs?"
+            }
             name="aroundDogs"
             rows={3}
             required
@@ -501,7 +615,10 @@ function SelectField({
         defaultValue=""
         className="rounded-xl border border-stone-300 bg-white px-4 py-3 outline-none transition focus:border-[#4C6A58] focus:ring-2 focus:ring-[#4C6A58]/10"
       >
-        <option value="" disabled>
+        <option
+          value=""
+          disabled
+        >
           Select an option
         </option>
 

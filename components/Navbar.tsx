@@ -49,11 +49,11 @@ export default function Navbar() {
           ${
             scrolled
               ? "h-[65px] md:h-[70px]"
-              : "h-[80px] md:h-[110px]"
+              : "h-[105px] md:h-[145px]"
           }
         `}
       >
-        
+
         {/* LOGO */}
         <Link
           href="/"
@@ -72,8 +72,8 @@ export default function Navbar() {
 
               ${
                 scrolled
-                  ? "h-[78px] w-[140px] md:h-[88px] md:w-[160px]"
-                  : "h-[100px] w-[175px] md:h-[135px] md:w-[225px]"
+                  ? "h-[78px] w-[140px] md:h-[90px] md:w-[175px] lg:h-[95px] lg:w-[190px]"
+                  : "h-[115px] w-[200px] md:h-[145px] md:w-[260px] lg:h-[155px] lg:w-[285px]"
               }
             `}
           />

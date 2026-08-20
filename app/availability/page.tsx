@@ -19,11 +19,21 @@ export default function AvailabilityPage() {
           alt=""
           aria-hidden
           className="
-            absolute inset-0
-            h-full w-full
+            absolute
+            left-1/2
+            top-0
+            h-full
+            w-[115%]
+            -translate-x-1/2
             object-cover
-            object-[65%_top]
-            sm:object-[60%_top]
+            object-[62%_top]
+
+            sm:w-[108%]
+            sm:object-[58%_top]
+
+            lg:left-0
+            lg:w-full
+            lg:translate-x-0
             lg:object-[center_35%]
           "
         />
