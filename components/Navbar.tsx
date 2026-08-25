@@ -61,7 +61,7 @@ export default function Navbar() {
           onClick={() => setMenuOpen(false)}
         >
           <Image
-            src="/tdpcLogo.png"
+            src="/topdawglogo.png"
             alt="Top Dawg Pet Care logo"
             width={500}
             height={500}
