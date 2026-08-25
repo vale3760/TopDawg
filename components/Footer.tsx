@@ -90,7 +90,7 @@ export default function Footer() {
         </div>
 
         {/* SOCIAL ICONS */}
-        <div className="mt-10 flex min-h-[100px] w-full items-center justify-center gap-14 bg-red-500">
+        <div className="mt-10 flex w-full items-center justify-center gap-14">
 
           {/* INSTAGRAM */}
           <a
