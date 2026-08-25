@@ -12,6 +12,8 @@ import {
   format,
 } from "date-fns";
 
+import "react-day-picker/style.css";
+
 type ServiceType =
   | "boarding"
   | "board-and-train";
@@ -389,21 +391,13 @@ export default function BookingCalendar() {
                 {mounted ? (
                   <DayPicker
                     mode="range"
-
-                    selected={
-                      boardingRange
-                    }
-
-                    onSelect={
-                      setBoardingRange
-                    }
+                    selected={boardingRange}
+                    onSelect={setBoardingRange}
 
                     disabled={[
                       {
-                        before:
-                          today,
+                        before: today,
                       },
-
                       ...unavailableDates,
                     ]}
 
@@ -411,12 +405,15 @@ export default function BookingCalendar() {
                     min={1}
                     showOutsideDays
 
-                    modifiers={{
-                      available:
-                        availableDates,
+                    classNames={{
+                      day: "h-11 w-11 p-0",
+                      day_button:
+                        "flex h-full w-full cursor-pointer items-center justify-center rounded-full",
+                    }}
 
-                      unavailable:
-                        unavailableDates,
+                    modifiers={{
+                      available: availableDates,
+                      unavailable: unavailableDates,
                     }}
 
                     modifiersClassNames={{
