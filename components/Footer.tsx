@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { FaInstagram, FaGoogle } from "react-icons/fa";
 
 export default function Footer() {
   return (
@@ -18,76 +19,89 @@ export default function Footer() {
         </div>
 
         {/* MOBILE LINKS AREA */}
-        <div className="mt-8 grid grid-cols-2 gap-8 md:contents">
+          <div className="mt-8 grid grid-cols-2 gap-8 md:contents">
 
-          {/* EXPLORE */}
-          <div>
-            <h3 className="font-bold text-white">
-              Explore
-            </h3>
+            {/* EXPLORE */}
+            <div>
+              <h3 className="font-bold text-white">
+                Explore
+              </h3>
 
-            <div className="mt-4 flex flex-col gap-3 text-sm text-stone-400 sm:text-base">
-              <Link
-                href="/about"
-                className="transition hover:text-white"
-              >
-                About
-              </Link>
+              <div className="mt-4 flex flex-col gap-3 text-sm text-stone-400 sm:text-base">
+                <Link href="/about" className="transition hover:text-white">
+                  About
+                </Link>
 
-              <Link
-                href="/services"
-                className="transition hover:text-white"
-              >
+                <Link href="/services" className="transition hover:text-white">
+                  Services
+                </Link>
+
+                <Link
+                  href="/contact?service=assessment"
+                  className="transition hover:text-white"
+                >
+                  Contact
+                </Link>
+
+                <Link href="/terms" className="transition hover:text-white">
+                  Terms & Conditions
+                </Link>
+              </div>
+            </div>
+
+            {/* SERVICES */}
+            <div>
+              <h3 className="font-bold text-white">
                 Services
-              </Link>
+              </h3>
 
-              <Link
-                href="/contact?service=assessment"
-                className="transition hover:text-white"
-              >
-                Contact
-              </Link>
+              <div className="mt-4 flex flex-col gap-3 text-sm text-stone-400 sm:text-base">
+                <Link
+                  href="/services#boarding"
+                  className="transition hover:text-white"
+                >
+                  Boarding
+                </Link>
 
-              <Link
-                href="/terms"
-                className="transition hover:text-white"
-              >
-                Terms & Conditions
-              </Link>
+                <Link
+                  href="/services#training"
+                  className="transition hover:text-white"
+                >
+                  Training
+                </Link>
+
+                <Link
+                  href="/services#board-and-train"
+                  className="transition hover:text-white"
+                >
+                  Board & Train
+                </Link>
+              </div>
             </div>
           </div>
 
-          {/* SERVICES */}
-          <div>
-            <h3 className="font-bold text-white">
-              Services
-            </h3>
+          {/* SOCIAL ICONS — centered under both columns */}
+          <div className="mt-10 flex items-center justify-center gap-16 md:col-span-3">
+            <a
+              href="https://www.instagram.com/top.dawg.pet.care?igsi=NTc4MTIwNjQ2YQ=="
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Instagram"
+              className="text-stone-400 transition hover:text-white"
+            >
+              <FaInstagram className="h-11 w-11 md:h-12 md:w-12" />
+            </a>
 
-            <div className="mt-4 flex flex-col gap-3 text-sm text-stone-400 sm:text-base">
-              <Link
-                href="/services#boarding"
-                className="transition hover:text-white"
-              >
-                Boarding
-              </Link>
-
-              <Link
-                href="/services#training"
-                className="transition hover:text-white"
-              >
-                Training
-              </Link>
-
-              <Link
-                href="/services#board-and-train"
-                className="transition hover:text-white"
-              >
-                Board & Train
-              </Link>
-            </div>
+            <a
+              href="https://maps.app.goo.gl/eAGTDKmELJVsiXjf7?g_st=iw"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Google"
+              className="text-stone-400 transition hover:text-white"
+            >
+              <FaGoogle className="h-11 w-11 md:h-12 md:w-12" />
+            </a>
           </div>
-
-        </div>
       </div>
 
       {/* BOTTOM */}
