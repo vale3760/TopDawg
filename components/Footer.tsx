@@ -100,7 +100,7 @@ export default function Footer() {
         <div className="mt-10 flex w-full items-center justify-center gap-12 sm:gap-16">
           {/* INSTAGRAM */}
           <a
-            href="YOUR_INSTAGRAM_URL"
+            href="https://www.instagram.com/top.dawg.pet.care?igsi=NTc4MTIwNjQ2YQ=="
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Instagram"
@@ -142,7 +142,7 @@ export default function Footer() {
 
           {/* GOOGLE */}
           <a
-            href="YOUR_GOOGLE_URL"
+            href="https://maps.app.goo.gl/eAGTDKmELJVsiXjf7?g_st=iw"
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Google"
