@@ -5,10 +5,14 @@ export default function Footer() {
     <footer className="bg-stone-950 text-stone-200">
       {/* MAIN FOOTER */}
       <div className="mx-auto max-w-7xl px-5 py-10 sm:px-6 sm:py-12 md:px-8 md:py-14">
+        {/* MOBILE:
+            Brand on top
+            Explore + Services side by side
 
-        {/* COLUMNS */}
+            DESKTOP:
+            3 columns
+        */}
         <div className="grid gap-10 md:grid-cols-3">
-
           {/* BRAND */}
           <div>
             <h2 className="text-lg font-black uppercase tracking-wide text-white sm:text-xl">
@@ -21,77 +25,79 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* EXPLORE */}
-          <div>
-            <h3 className="font-bold text-white">
-              Explore
-            </h3>
+          {/* EXPLORE + SERVICES */}
+          <div className="grid grid-cols-2 gap-8 md:col-span-2 md:grid-cols-2 md:gap-10">
+            {/* EXPLORE */}
+            <div>
+              <h3 className="font-bold text-white">
+                Explore
+              </h3>
 
-            <div className="mt-4 flex flex-col gap-3 text-sm text-stone-400 sm:text-base">
-              <Link
-                href="/about"
-                className="transition hover:text-white"
-              >
-                About
-              </Link>
+              <div className="mt-4 flex flex-col gap-3 text-sm text-stone-400 sm:text-base">
+                <Link
+                  href="/about"
+                  className="transition hover:text-white"
+                >
+                  About
+                </Link>
 
-              <Link
-                href="/services"
-                className="transition hover:text-white"
-              >
-                Services
-              </Link>
+                <Link
+                  href="/services"
+                  className="transition hover:text-white"
+                >
+                  Services
+                </Link>
 
-              <Link
-                href="/contact?service=assessment"
-                className="transition hover:text-white"
-              >
-                Contact
-              </Link>
+                <Link
+                  href="/contact?service=assessment"
+                  className="transition hover:text-white"
+                >
+                  Contact
+                </Link>
 
-              <Link
-                href="/terms"
-                className="transition hover:text-white"
-              >
-                Terms & Conditions
-              </Link>
+                <Link
+                  href="/terms"
+                  className="transition hover:text-white"
+                >
+                  Terms & Conditions
+                </Link>
+              </div>
             </div>
-          </div>
 
-          {/* SERVICES */}
-          <div>
-            <h3 className="font-bold text-white">
-              Services
-            </h3>
+            {/* SERVICES */}
+            <div>
+              <h3 className="font-bold text-white">
+                Services
+              </h3>
 
-            <div className="mt-4 flex flex-col gap-3 text-sm text-stone-400 sm:text-base">
-              <Link
-                href="/services#boarding"
-                className="transition hover:text-white"
-              >
-                Boarding
-              </Link>
+              <div className="mt-4 flex flex-col gap-3 text-sm text-stone-400 sm:text-base">
+                <Link
+                  href="/services#boarding"
+                  className="transition hover:text-white"
+                >
+                  Boarding
+                </Link>
 
-              <Link
-                href="/services#training"
-                className="transition hover:text-white"
-              >
-                Training
-              </Link>
+                <Link
+                  href="/services#training"
+                  className="transition hover:text-white"
+                >
+                  Training
+                </Link>
 
-              <Link
-                href="/services#board-and-train"
-                className="transition hover:text-white"
-              >
-                Board & Train
-              </Link>
+                <Link
+                  href="/services#board-and-train"
+                  className="transition hover:text-white"
+                >
+                  Board & Train
+                </Link>
+              </div>
             </div>
           </div>
         </div>
 
         {/* SOCIAL ICONS */}
-        <div className="mt-10 flex w-full items-center justify-center gap-14">
-
+        <div className="mt-10 flex w-full items-center justify-center gap-12 sm:gap-16">
           {/* INSTAGRAM */}
           <a
             href="YOUR_INSTAGRAM_URL"
@@ -103,7 +109,7 @@ export default function Footer() {
             <svg
               viewBox="0 0 24 24"
               xmlns="http://www.w3.org/2000/svg"
-              className="h-11 w-11"
+              className="h-10 w-10 sm:h-11 sm:w-11"
               fill="none"
               stroke="currentColor"
               strokeWidth="2"
@@ -145,7 +151,7 @@ export default function Footer() {
             <svg
               viewBox="0 0 24 24"
               xmlns="http://www.w3.org/2000/svg"
-              className="h-11 w-11"
+              className="h-10 w-10 sm:h-11 sm:w-11"
               fill="currentColor"
             >
               <path d="M21.6 12.23c0-.71-.06-1.4-.18-2.06H12v3.9h5.38a4.6 4.6 0 0 1-2 3.02v2.52h3.24c1.9-1.75 2.98-4.33 2.98-7.38Z" />
