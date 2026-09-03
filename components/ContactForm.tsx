@@ -433,14 +433,6 @@ export default function ContactForm({
             rows={4}
             required
           />
-
-          <TextAreaField
-            label="What situations are most challenging for your dog?"
-            name="challengingSituations"
-            rows={4}
-            required
-            placeholder="For example: walks, other dogs, visitors, being alone, new environments, etc."
-          />
         </FormSection>
       )}
 
