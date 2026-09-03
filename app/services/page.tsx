@@ -688,7 +688,7 @@ export default function ServicesPage() {
         </ul>
 
         <Link
-          href="/contact?service=board-and-train"
+          href="/availability?service=board-and-train"
           className="mt-8 block w-full rounded-full bg-[#4C6A58] px-7 py-3 text-center font-semibold !text-white sm:inline-block sm:w-auto"
         >
           Inquire About Board & Train
@@ -814,7 +814,7 @@ export default function ServicesPage() {
           "Follow-up session included",
           "5+ nights recommended",
         ]}
-        href="/contact?service=board-and-train"
+        href="/availability?service=board-and-train"
         button="Learn More"
       />
     </div>

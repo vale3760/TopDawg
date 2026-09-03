@@ -425,11 +425,6 @@ export async function POST(request: NextRequest) {
                 "What would they like to accomplish through training?",
                 goals,
               )}
-
-              ${emailSection(
-                "What situations are most challenging for the dog?",
-                challengingSituations,
-              )}
             `
             : ""
         }
