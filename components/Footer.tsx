@@ -168,14 +168,72 @@ export default function Footer() {
 
       {/* BOTTOM */}
       <div className="border-t border-stone-800 px-5 py-6 sm:px-6">
-        <div className="mx-auto flex max-w-7xl flex-col items-center gap-3 text-center text-xs text-stone-500 sm:text-sm md:flex-row md:justify-between md:text-left">
-          <p>
+        <div
+          className="
+            mx-auto
+            flex
+            max-w-7xl
+            flex-col
+            items-center
+            gap-3
+            text-center
+            text-xs
+            text-stone-500
+            sm:text-sm
+
+            md:grid
+            md:grid-cols-3
+            md:items-center
+            md:text-left
+          "
+        >
+          {/* COPYRIGHT */}
+          <p className="md:justify-self-start">
             © {new Date().getFullYear()} Top Dawg Pet Care. All rights reserved.
           </p>
 
+          {/* MADE BY - CENTERED ON DESKTOP */}
+          <a
+            href="https://www.linkedin.com/in/valeria-martinez2023/"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Website developed by Valeria Martinez"
+            className="
+              group
+              flex
+              items-center
+              justify-center
+              gap-2
+              md:justify-self-center
+            "
+          >
+            <span className="text-[11px] uppercase tracking-[0.18em] text-stone-600 transition group-hover:text-stone-400">
+              Made by
+            </span>
+
+            <img
+              src="/logoVale.png"
+              alt="Valeria Martinez"
+              className="
+                h-10
+                w-auto
+                opacity-70
+                transition
+                duration-300
+                group-hover:opacity-100
+                sm:h-11
+              "
+            />
+          </a>
+
+          {/* TERMS */}
           <Link
             href="/terms"
-            className="transition hover:text-white"
+            className="
+              transition
+              hover:text-white
+              md:justify-self-end
+            "
           >
             Terms & Conditions
           </Link>
