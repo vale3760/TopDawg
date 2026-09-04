@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import BookingCalendar from "@/components/BookingCalendar";
+import BookingCalendar from "../../components/BookingCalendar";
 
 export const metadata: Metadata = {
   title: "Availability",
@@ -7,7 +7,21 @@ export const metadata: Metadata = {
     "Check boarding, board-and-train, and private training availability.",
 };
 
-export default function AvailabilityPage() {
+type AvailabilityPageProps = {
+  searchParams: Promise<{
+    service?: string;
+  }>;
+};
+
+export default async function AvailabilityPage({
+  searchParams,
+}: AvailabilityPageProps) {
+  const params = await searchParams;
+
+const initialService: "boarding" | "board-and-train" =
+  params.service === "board-and-train"
+    ? "board-and-train"
+    : "boarding";
   return (
     <>
       {/* HERO + BOOKING AREA */}
@@ -92,7 +106,7 @@ export default function AvailabilityPage() {
           </div>
 
           {/* BOOKING CALENDAR */}
-          <BookingCalendar />
+          <BookingCalendar initialService={initialService}/>
 
         </div>
       </section>

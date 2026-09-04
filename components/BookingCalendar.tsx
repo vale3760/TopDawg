@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import {
   DayPicker,
@@ -60,14 +59,13 @@ function sameDay(
   );
 }
 
-export default function BookingCalendar() {
-  const searchParams = useSearchParams();
+type BookingCalendarProps = {
+  initialService?: ServiceType;
+};
 
-  const initialService =
-    searchParams.get("service") === "board-and-train"
-      ? "board-and-train"
-      : "boarding";
-
+export default function BookingCalendar({
+  initialService = "boarding",
+}: BookingCalendarProps) {
   const [service, setService] =
     useState<ServiceType>(initialService);
 
